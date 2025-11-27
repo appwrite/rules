@@ -52,6 +52,10 @@ export const quickStartUrls = {
 	// React Native
 	'react-native': 'https://appwrite.io/docs/quick-starts/react-native',
 	
+	// Mobile Client SDKs
+	apple: 'https://appwrite.io/docs/quick-starts/apple',
+	android: 'https://appwrite.io/docs/quick-starts/android',
+	
 	// Server SDKs
 	python: 'https://appwrite.io/docs/quick-starts/python',
 	php: 'https://appwrite.io/docs/quick-starts/php',
@@ -60,7 +64,8 @@ export const quickStartUrls = {
 	dotnet: 'https://appwrite.io/docs/quick-starts/dotnet',
 	dart: 'https://appwrite.io/docs/quick-starts/dart',
 	flutter: 'https://appwrite.io/docs/quick-starts/flutter',
-	kotlin: 'https://appwrite.io/docs/quick-starts/kotlin'
+	kotlin: 'https://appwrite.io/docs/quick-starts/kotlin',
+	swift: 'https://appwrite.io/docs/quick-starts/swift'
 };
 
 /**
@@ -80,6 +85,8 @@ export const frameworkNames = {
 	nodejs: 'Node.js',
 	vanilla: 'Web',
 	'react-native': 'React Native',
+	apple: 'Apple',
+	android: 'Android',
 	python: 'Python',
 	php: 'PHP',
 	go: 'Go',
@@ -87,6 +94,7 @@ export const frameworkNames = {
 	dotnet: '.NET',
 	dart: 'Dart',
 	flutter: 'Flutter',
-	kotlin: 'Kotlin'
+	kotlin: 'Kotlin',
+	swift: 'Swift'
 };
 

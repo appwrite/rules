@@ -8,4 +8,6 @@ export * as kotlin from './kotlin/index.js';
 export * as reactNative from './react-native/index.js';
 export * as ruby from './ruby/index.js';
 export * as dotnet from './dotnet/index.js';
+export * as apple from './apple/index.js';
+export * as android from './android/index.js';
 

@@ -46,16 +46,30 @@ export const SDK_OPTIONS = {
 		exportSyntax: 'class',
 		asyncSyntax: 'Future'
 	},
+	apple: {
+		name: 'Apple',
+		frameworks: ['vanilla'],
+		importSyntax: 'import',
+		exportSyntax: 'func',
+		asyncSyntax: 'async'
+	},
+	android: {
+		name: 'Android',
+		frameworks: ['vanilla'],
+		importSyntax: 'import',
+		exportSyntax: 'fun',
+		asyncSyntax: 'suspend'
+	},
 	swift: {
 		name: 'Swift',
-		frameworks: ['ios', 'vanilla'],
+		frameworks: ['server', 'vanilla'],
 		importSyntax: 'import',
 		exportSyntax: 'func',
 		asyncSyntax: 'async'
 	},
 	kotlin: {
 		name: 'Kotlin',
-		frameworks: ['android', 'vanilla'],
+		frameworks: ['server', 'vanilla'],
 		importSyntax: 'import',
 		exportSyntax: 'fun',
 		asyncSyntax: 'suspend'
@@ -142,6 +156,8 @@ async function generateSDKInitialization(sdk, framework) {
 		php: codeExamples.php,
 		go: codeExamples.go,
 		flutter: codeExamples.dart,
+		apple: codeExamples.apple,
+		android: codeExamples.android,
 		swift: codeExamples.swift,
 		kotlin: codeExamples.kotlin,
 		ruby: codeExamples.ruby,
