@@ -15,7 +15,7 @@
 		{ id: 'functions', label: 'Functions' },
 		{ id: 'messaging', label: 'Messaging' },
 		{ id: 'sites', label: 'Sites' },
-		{ id: 'realtime', label: 'Real-time' }
+		{ id: 'realtime', label: 'Realtime' }
 	];
 	
 	function updateFrameworks() {

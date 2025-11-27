@@ -323,11 +323,11 @@ ${sitesProductLinks}
  */
 async function generateRealtimeSection(sdk, framework) {
 	const { realtimeProductLinks } = await import('./languages/common/products.js');
-	return `## Real-time Subscriptions
+	return `## Realtime Subscriptions
 
 ${realtimeProductLinks}
 
-### Best Practices for Real-time Subscriptions
+### Best Practices for Realtime Subscriptions
 
 - **Connection Management**: Always unsubscribe from channels when components unmount or pages are closed to prevent memory leaks
 - **Error Handling**: Implement reconnection logic for dropped connections and handle network errors gracefully
@@ -335,9 +335,9 @@ ${realtimeProductLinks}
 - **Channel Selection**: Subscribe only to the specific channels you need to minimize bandwidth and improve performance
 - **Payload Validation**: Always validate payload data before processing to ensure data integrity
 - **Rate Limiting**: Be mindful of the number of subscriptions and events to avoid overwhelming the client
-- **State Synchronization**: Use real-time updates to keep local state in sync with server state, but handle conflicts appropriately
+- **State Synchronization**: Use realtime updates to keep local state in sync with server state, but handle conflicts appropriately
 - **Authentication**: Ensure proper authentication is in place before subscribing to protected channels
-- **Testing**: Test real-time functionality with network interruptions and reconnection scenarios
+- **Testing**: Test realtime functionality with network interruptions and reconnection scenarios
 - **Cleanup**: Store unsubscribe functions and call them in cleanup hooks (useEffect cleanup, componentWillUnmount, etc.)`;
 }
 

@@ -42,7 +42,7 @@ export function generateMCPRecommendation() {
 ### Benefits
 
 Once installed, you can ask questions like:
-- "How do I set up real-time subscriptions in Appwrite?"
+- "How do I set up realtime subscriptions in Appwrite?"
 - "Show me how to authenticate users with OAuth"
 - "What are the best practices for database queries?"
 - "How do I implement file uploads with Appwrite Storage?"

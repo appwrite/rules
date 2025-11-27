@@ -103,9 +103,9 @@ For instant rollbacks, see the [Instant Rollbacks Guide](https://appwrite.io/doc
 For deployment previews, see the [Previews Documentation](https://appwrite.io/docs/products/sites/previews).`;
 
 /**
- * Real-time product documentation
+ * Realtime product documentation
  */
-export const realtimeProductLinks = `For detailed real-time subscriptions, see the [Real-time Documentation](https://appwrite.io/docs/products/realtime).
+export const realtimeProductLinks = `For detailed  subscriptions, see the [Realtime Documentation](https://appwrite.io/docs/products/realtime).
 
 For subscribing to database changes, see the [Database Subscriptions Guide](https://appwrite.io/docs/products/realtime/subscribe-to-databases).
 
@@ -113,7 +113,7 @@ For subscribing to storage changes, see the [Storage Subscriptions Guide](https:
 
 For subscribing to account changes, see the [Account Subscriptions Guide](https://appwrite.io/docs/products/realtime/subscribe-to-account).
 
-For real-time channels and events, see the [Channels Documentation](https://appwrite.io/docs/products/realtime/channels).
+For realtime channels and events, see the [Channels Documentation](https://appwrite.io/docs/products/realtime/channels).
 
-For real-time event types and payloads, see the [Events Documentation](https://appwrite.io/docs/products/realtime/events).`;
+For realtime event types and payloads, see the [Events Documentation](https://appwrite.io/docs/products/realtime/events).`;
 
