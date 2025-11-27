@@ -191,6 +191,7 @@ ${authProductLinks}
 - **API Keys**: Never expose API keys to client-side code - use environment variables
 - **Session Validation**: Always validate sessions on the server before trusting them
 - **Team Permissions**: Use team roles for granular access control in multi-tenant applications
+- **Multitenancy**: Use team-based permissions when a user requires multitenancy to properly isolate data and resources between tenants
 - **OAuth Redirects**: Handle OAuth redirects properly with success and failure URLs
 - **Password Security**: Use strong password requirements and consider implementing MFA
 - **Session Expiry**: Configure appropriate session expiry times based on your security requirements`;
