@@ -233,6 +233,9 @@ When building applications that involve multiple users or tenants:
  */
 async function generatePermissionsSection(sdk, framework) {
 	const { authProductLinks } = await import('./languages/common/products.js');
+	const { getPermissionExamples } = await import('./languages/common/permissions-examples.js');
+	const examples = getPermissionExamples(sdk);
+	
 	return `## Permissions & Multi-Tenancy
 
 This section is CRITICAL for building secure, scalable applications with Appwrite. Multi-tenancy is one of the most important architectural patterns in modern applications, and Appwrite's team-based permission system is designed specifically for this.
@@ -246,12 +249,8 @@ Multi-tenancy allows a single application instance to serve multiple isolated gr
 **ALWAYS PREFER TEAM/MEMBER-BASED ROLES over user-specific roles.** This is a fundamental architectural decision:
 
 #### Avoid: User-Specific Permissions
-\`\`\`
-// DON'T do this for multi-tenant apps
-create(collectionId, data, [
-  Permission.read(Role.user(userId1)),
-  Permission.write(Role.user(userId1))
-])
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.avoidUserPermissions}
 \`\`\`
 
 **Problems with user-specific permissions:**
@@ -262,16 +261,8 @@ create(collectionId, data, [
 - Maintenance nightmare as teams grow
 
 #### Prefer: Team/Member-Based Roles
-\`\`\`
-// DO this for multi-tenant apps
-create(collectionId, data, [
-  Permission.read(Role.team(teamId, "owner")),
-  Permission.read(Role.team(teamId, "admin")),
-  Permission.read(Role.team(teamId, "member")),
-  Permission.update(Role.team(teamId, "owner")),
-  Permission.update(Role.team(teamId, "admin")),
-  Permission.delete(Role.team(teamId, "owner"))
-])
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.preferTeamPermissions}
 \`\`\`
 
 **Benefits of team/member-based roles:**
@@ -288,15 +279,8 @@ create(collectionId, data, [
 Teams in Appwrite represent tenants. Each team should map to a business entity (company, organization, workspace, etc.).
 
 **Creating a team:**
-\`\`\`
-import { Teams } from 'appwrite';
-
-// Create a team when a new tenant/organization signs up
-const team = await teams.create(
-  teamId,        // Unique team ID (can be auto-generated)
-  teamName,       // Display name
-  roles           // Array of role strings: ['owner', 'admin', 'member']
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createTeam}
 \`\`\`
 
 #### Step 2: Define Custom Roles
@@ -308,9 +292,7 @@ Create roles that match your application's permission model. Common roles:
 - **viewer**: Read-only access
 
 **Creating custom roles (Server-side only):**
-\`\`\`
-import { Teams } from 'appwrite';
-
+\`\`\`${getLanguageFromSdk(sdk)}
 // Define roles when creating the team (optional, defaults exist)
 // Or create via Appwrite Console or Server SDK
 // Roles are created per team, allowing different permission models per tenant
@@ -322,94 +304,42 @@ Member management is the foundation of multi-tenant applications. Here's how to 
 
 **A. Invite Members to Teams**
 
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createMembershipEmail}
 \`\`\`
-import { Teams } from 'appwrite';
 
-// Send team invitation (email-based)
-const invite = await teams.createMembership(
-  teamId,
-  email,           // Email of user to invite
-  roles,           // Array of role strings: ['admin', 'member']
-  url              // Invitation redirect URL
-);
-
-// Or invite by user ID (if user already exists)
-const membership = await teams.createMembership(
-  teamId,
-  userId,
-  roles
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createMembershipUserId}
 \`\`\`
 
 **B. List Team Members**
 
-\`\`\`
-import { Teams } from 'appwrite';
-
-// Get all members of a team
-const memberships = await teams.listMemberships(teamId);
-
-// Access member data
-memberships.memberships.forEach(membership => {
-  console.log(membership.userId);
-  console.log(membership.roles);      // Array of role strings
-  console.log(membership.userName);
-  console.log(membership.userEmail);
-});
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.listMemberships}
 \`\`\`
 
 **C. Update Member Roles**
 
-\`\`\`
-import { Teams } from 'appwrite';
-
-// Update a member's roles (only team owners/admins can do this)
-await teams.updateMembershipRoles(
-  teamId,
-  membershipId,
-  ['admin', 'member']  // New roles array
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.updateMembership}
 \`\`\`
 
 **D. Remove Members**
 
-\`\`\`
-import { Teams } from 'appwrite';
-
-// Remove a member from a team
-await teams.deleteMembership(teamId, membershipId);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.deleteMembership}
 \`\`\`
 
 **E. Get Current User's Teams**
 
-\`\`\`
-import { Teams } from 'appwrite';
-
-// List all teams the current user belongs to
-const teams = await teams.list();
-
-teams.teams.forEach(team => {
-  console.log(team.$id);
-  console.log(team.name);
-});
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.listTeams}
 \`\`\`
 
 **F. Get Current User's Role in a Team**
 
-\`\`\`
-import { Teams } from 'appwrite';
-
-// Get membership details for current user in a specific team
-const memberships = await teams.listMemberships(teamId);
-
-const userMembership = memberships.memberships.find(
-  m => m.userId === currentUserId
-);
-
-if (userMembership) {
-  console.log(userMembership.roles);  // ['owner', 'admin', etc.]
-  const hasAdminRole = userMembership.roles.includes('admin');
-}
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.getUserRole}
 \`\`\`
 
 #### Step 4: Apply Permissions in Collections
@@ -418,91 +348,32 @@ When creating documents in multi-tenant applications, always use team roles:
 
 **Database Collections:**
 
-\`\`\`
-import { TablesDB, Permission, Role } from 'appwrite';
-
-// Create document with team-based permissions
-await tablesdb.createRow(
-  databaseId,
-  tableId,
-  documentId,
-  {
-    title: 'My Document',
-    teamId: teamId,  // Always store teamId for querying
-    // ... other fields
-  },
-  [
-    // Owners and admins can do everything
-    Permission.read(Role.team(teamId, "owner")),
-    Permission.read(Role.team(teamId, "admin")),
-    Permission.read(Role.team(teamId, "member")),
-    Permission.update(Role.team(teamId, "owner")),
-    Permission.update(Role.team(teamId, "admin")),
-    Permission.delete(Role.team(teamId, "owner")),
-    Permission.delete(Role.team(teamId, "admin"))
-  ]
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createRow}
 \`\`\`
 
 **Collection-Level Permissions:**
 
 When creating collections, set default permissions:
 
-\`\`\`
-import { TablesDB, Permission, Role } from 'appwrite';
-
-// Create collection with team-based permissions
-await tablesdb.createTable(
-  databaseId,
-  tableId,
-  tableName,
-  [
-    // Collection permissions
-    Permission.create(Role.team(teamId, "member")),
-    Permission.read(Role.team(teamId, "member")),
-    Permission.update(Role.team(teamId, "admin")),
-    Permission.delete(Role.team(teamId, "owner"))
-  ]
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createTable}
 \`\`\`
 
 #### Step 5: Query with Team Isolation
 
 Always filter queries by teamId to ensure data isolation:
 
-\`\`\`
-import { TablesDB, Query } from 'appwrite';
-
-// ALWAYS filter by teamId to ensure tenant isolation
-const documents = await tablesdb.listDocuments(
-  databaseId,
-  tableId,
-  [
-    Query.equal('teamId', teamId),  // Critical: filter by team
-    Query.orderDesc('$createdAt'),
-    Query.limit(25)
-  ]
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.listRows}
 \`\`\`
 
 #### Step 6: Storage Permissions
 
 Apply the same team-based permission pattern to storage:
 
-\`\`\`
-import { Storage, Permission, Role } from 'appwrite';
-
-// Create file with team-based permissions
-await storage.createFile(
-  bucketId,
-  fileId,
-  fileInput,
-  [
-    Permission.read(Role.team(teamId, "member")),
-    Permission.update(Role.team(teamId, "admin")),
-    Permission.delete(Role.team(teamId, "owner"))
-  ]
-);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.createFile}
 \`\`\`
 
 ### Complete Member Management Implementation Pattern
@@ -510,42 +381,28 @@ await storage.createFile(
 Here's a complete pattern for building member management UI and logic:
 
 **1. Team Creation Flow:**
-\`\`\`
-// When user creates account/organization
-const team = await teams.create(uniqueId(), 'Company Name');
-// Make creator an owner
-await teams.createMembership(team.$id, userId, ['owner']);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.teamCreationFlow}
 \`\`\`
 
 **2. Invite Flow:**
-\`\`\`
-// Owner/admin invites new member
-const invite = await teams.createMembership(
-  teamId,
-  email,
-  ['member'],  // Default role
-  'https://yourapp.com/accept-invite'  // Redirect after accepting
-);
-// User receives email, clicks link, accepts invitation
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.inviteFlow}
 \`\`\`
 
 **3. Member List UI:**
-\`\`\`
-// Display all team members with their roles
-const memberships = await teams.listMemberships(teamId);
-// Show list with role badges and action buttons
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.memberListUI}
 \`\`\`
 
 **4. Role Change:**
-\`\`\`
-// Admin/owner changes member role
-await teams.updateMembershipRoles(teamId, membershipId, ['admin']);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.roleChange}
 \`\`\`
 
 **5. Member Removal:**
-\`\`\`
-// Remove member (with confirmation)
-await teams.deleteMembership(teamId, membershipId);
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.memberRemoval}
 \`\`\`
 
 ### Permission Best Practices
@@ -563,11 +420,8 @@ await teams.deleteMembership(teamId, membershipId);
 6. **Query Isolation**: Always include \`teamId\` in queries to prevent cross-tenant data leaks
 
 7. **Role Checks**: Before allowing sensitive operations, check the user's role in the team:
-   \`\`\`
-   const membership = await getCurrentUserMembership(teamId);
-   if (!membership.roles.includes('admin')) {
-     throw new Error('Insufficient permissions');
-   }
+   \`\`\`${getLanguageFromSdk(sdk)}
+${examples.roleCheck}
    \`\`\`
 
 8. **Permission Inheritance**: Consider if child resources should inherit parent team permissions
@@ -612,6 +466,30 @@ When permissions aren't working:
 ${authProductLinks}
 
 For comprehensive permission patterns and examples, always refer to the official Appwrite documentation on Teams, Multi-tenancy, and Permissions.`;
+}
+
+/**
+ * Get language identifier for code blocks based on SDK
+ * @param {string} sdk
+ * @returns {string}
+ */
+function getLanguageFromSdk(sdk) {
+	const languageMap = {
+		javascript: 'javascript',
+		'react-native': 'javascript',
+		python: 'python',
+		php: 'php',
+		go: 'go',
+		flutter: 'dart',
+		dart: 'dart',
+		apple: 'swift',
+		android: 'kotlin',
+		swift: 'swift',
+		kotlin: 'kotlin',
+		ruby: 'ruby',
+		dotnet: 'csharp'
+	};
+	return languageMap[sdk] || 'javascript';
 }
 
 /**
