@@ -14,6 +14,7 @@ import { generateMCPRecommendation } from './languages/common/mcp.js';
  * @property {string} sdk
  * @property {string} framework
  * @property {string[]} features
+ * @property {boolean} [includeMCP] - Whether to include MCP recommendation section
  */
 
 /** @type {Record<string, SDKConfig>} */
@@ -109,14 +110,16 @@ export const SDK_OPTIONS = {
  * @returns {Promise<string>}
  */
 export async function generateRules(config) {
-	const { sdk, framework, features } = config;
+	const { sdk, framework, features, includeMCP = false } = config;
 	const sdkInfo = SDK_OPTIONS[sdk];
 	
 	const sdkInit = await generateSDKInitialization(sdk, framework);
 	
 	// Generate all sections in parallel
+	// Permissions section is mandatory for all products
 	const sections = await Promise.all([
 		features.includes('auth') ? generateAuthSection(sdk, framework) : Promise.resolve(''),
+		generatePermissionsSection(sdk, framework),
 		features.includes('database') ? generateDatabaseSection(sdk, framework) : Promise.resolve(''),
 		features.includes('storage') ? generateStorageSection(sdk, framework) : Promise.resolve(''),
 		features.includes('functions') ? generateFunctionsSection(sdk, framework) : Promise.resolve(''),
@@ -125,6 +128,8 @@ export async function generateRules(config) {
 		features.includes('realtime') ? generateRealtimeSection(sdk, framework) : Promise.resolve('')
 	]);
 	
+	const mcpSection = includeMCP ? `${generateMCPRecommendation()}\n\n` : '';
+	
 	let rules = `---
 description: You are an expert developer focused on building apps with Appwrite's ${sdkInfo?.name || sdk} SDK.
 alwaysApply: false
@@ -132,9 +137,7 @@ alwaysApply: false
 
 # Appwrite Development Rules
 
-${generateMCPRecommendation()}
-
-${sdkInit}
+${mcpSection}${sdkInit}
 ${sections.join('\n\n')}
 `;
 
@@ -206,11 +209,409 @@ ${authProductLinks}
 - **Session Security**: Always use HttpOnly cookies for session storage in SSR applications
 - **API Keys**: Never expose API keys to client-side code - use environment variables
 - **Session Validation**: Always validate sessions on the server before trusting them
-- **Team Permissions**: Use team roles for granular access control in multi-tenant applications
-- **Multitenancy**: Use team-based permissions when a user requires multitenancy to properly isolate data and resources between tenants
+- **Team-Based Architecture**: ALWAYS prefer team/member-based roles over user-specific roles for any application requiring shared access or multi-tenancy
+- **Multi-Tenant Applications**: Use teams as the primary mechanism for tenant isolation and resource sharing
 - **OAuth Redirects**: Handle OAuth redirects properly with success and failure URLs
 - **Password Security**: Use strong password requirements and consider implementing MFA
-- **Session Expiry**: Configure appropriate session expiry times based on your security requirements`;
+- **Session Expiry**: Configure appropriate session expiry times based on your security requirements
+
+### Team & Member Management Fundamentals
+
+When building applications that involve multiple users or tenants:
+
+1. **Always Start with Teams**: For any feature requiring shared access, create a team first, then add members with roles
+2. **Role-Based Access**: Assign roles (e.g., "owner", "admin", "member", "viewer") to team members rather than setting individual user permissions
+3. **Team Isolation**: Use teams as the boundary for data isolation in multi-tenant applications
+4. **Member Invitations**: Implement team invitation workflows for onboarding new members
+5. **Role Management**: Build role management UIs that allow team owners/admins to manage member roles dynamically`;
+}
+
+/**
+ * @param {string} sdk
+ * @param {string} framework
+ * @returns {Promise<string>}
+ */
+async function generatePermissionsSection(sdk, framework) {
+	const { authProductLinks } = await import('./languages/common/products.js');
+	return `## Permissions & Multi-Tenancy
+
+This section is CRITICAL for building secure, scalable applications with Appwrite. Multi-tenancy is one of the most important architectural patterns in modern applications, and Appwrite's team-based permission system is designed specifically for this.
+
+### Why Multi-Tenancy Matters
+
+Multi-tenancy allows a single application instance to serve multiple isolated groups of users (tenants) while maintaining complete data isolation and security. Almost every modern SaaS application requires multi-tenancy to scale efficiently.
+
+### Team/Member Roles vs User-Specific Roles: The Critical Distinction
+
+**ALWAYS PREFER TEAM/MEMBER-BASED ROLES over user-specific roles.** This is a fundamental architectural decision:
+
+#### Avoid: User-Specific Permissions
+\`\`\`
+// DON'T do this for multi-tenant apps
+create(collectionId, data, [
+  Permission.read(Role.user(userId1)),
+  Permission.write(Role.user(userId1))
+])
+\`\`\`
+
+**Problems with user-specific permissions:**
+- Hard to scale when users need to share resources
+- Difficult to add/remove access without updating every document
+- No way to represent organizational hierarchies
+- Poor support for collaborative features
+- Maintenance nightmare as teams grow
+
+#### Prefer: Team/Member-Based Roles
+\`\`\`
+// DO this for multi-tenant apps
+create(collectionId, data, [
+  Permission.read(Role.team(teamId, "owner")),
+  Permission.read(Role.team(teamId, "admin")),
+  Permission.read(Role.team(teamId, "member")),
+  Permission.update(Role.team(teamId, "owner")),
+  Permission.update(Role.team(teamId, "admin")),
+  Permission.delete(Role.team(teamId, "owner"))
+])
+\`\`\`
+
+**Benefits of team/member-based roles:**
+- Automatic access for all team members based on their role
+- Easy to add/remove members without touching documents
+- Scales naturally as teams grow
+- Supports organizational hierarchies and complex permissions
+- Industry-standard pattern for SaaS applications
+
+### Building Multi-Tenant Applications from Scratch
+
+#### Step 1: Create Teams Structure
+
+Teams in Appwrite represent tenants. Each team should map to a business entity (company, organization, workspace, etc.).
+
+**Creating a team:**
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Create a team when a new tenant/organization signs up
+const team = await teams.create(
+  teamId,        // Unique team ID (can be auto-generated)
+  teamName,       // Display name
+  roles           // Array of role strings: ['owner', 'admin', 'member']
+);
+\`\`\`
+
+#### Step 2: Define Custom Roles
+
+Create roles that match your application's permission model. Common roles:
+- **owner**: Full control, can manage team settings and members
+- **admin**: Can manage resources and most settings, but not team membership
+- **member**: Can create/edit resources, but with limited permissions
+- **viewer**: Read-only access
+
+**Creating custom roles (Server-side only):**
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Define roles when creating the team (optional, defaults exist)
+// Or create via Appwrite Console or Server SDK
+// Roles are created per team, allowing different permission models per tenant
+\`\`\`
+
+#### Step 3: Member Management from Scratch
+
+Member management is the foundation of multi-tenant applications. Here's how to build it:
+
+**A. Invite Members to Teams**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Send team invitation (email-based)
+const invite = await teams.createMembership(
+  teamId,
+  email,           // Email of user to invite
+  roles,           // Array of role strings: ['admin', 'member']
+  url              // Invitation redirect URL
+);
+
+// Or invite by user ID (if user already exists)
+const membership = await teams.createMembership(
+  teamId,
+  userId,
+  roles
+);
+\`\`\`
+
+**B. List Team Members**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Get all members of a team
+const memberships = await teams.listMemberships(teamId);
+
+// Access member data
+memberships.memberships.forEach(membership => {
+  console.log(membership.userId);
+  console.log(membership.roles);      // Array of role strings
+  console.log(membership.userName);
+  console.log(membership.userEmail);
+});
+\`\`\`
+
+**C. Update Member Roles**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Update a member's roles (only team owners/admins can do this)
+await teams.updateMembershipRoles(
+  teamId,
+  membershipId,
+  ['admin', 'member']  // New roles array
+);
+\`\`\`
+
+**D. Remove Members**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Remove a member from a team
+await teams.deleteMembership(teamId, membershipId);
+\`\`\`
+
+**E. Get Current User's Teams**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// List all teams the current user belongs to
+const teams = await teams.list();
+
+teams.teams.forEach(team => {
+  console.log(team.$id);
+  console.log(team.name);
+});
+\`\`\`
+
+**F. Get Current User's Role in a Team**
+
+\`\`\`
+import { Teams } from 'appwrite';
+
+// Get membership details for current user in a specific team
+const memberships = await teams.listMemberships(teamId);
+
+const userMembership = memberships.memberships.find(
+  m => m.userId === currentUserId
+);
+
+if (userMembership) {
+  console.log(userMembership.roles);  // ['owner', 'admin', etc.]
+  const hasAdminRole = userMembership.roles.includes('admin');
+}
+\`\`\`
+
+#### Step 4: Apply Permissions in Collections
+
+When creating documents in multi-tenant applications, always use team roles:
+
+**Database Collections:**
+
+\`\`\`
+import { TablesDB, Permission, Role } from 'appwrite';
+
+// Create document with team-based permissions
+await tablesdb.createRow(
+  databaseId,
+  tableId,
+  documentId,
+  {
+    title: 'My Document',
+    teamId: teamId,  // Always store teamId for querying
+    // ... other fields
+  },
+  [
+    // Owners and admins can do everything
+    Permission.read(Role.team(teamId, "owner")),
+    Permission.read(Role.team(teamId, "admin")),
+    Permission.read(Role.team(teamId, "member")),
+    Permission.update(Role.team(teamId, "owner")),
+    Permission.update(Role.team(teamId, "admin")),
+    Permission.delete(Role.team(teamId, "owner")),
+    Permission.delete(Role.team(teamId, "admin"))
+  ]
+);
+\`\`\`
+
+**Collection-Level Permissions:**
+
+When creating collections, set default permissions:
+
+\`\`\`
+import { TablesDB, Permission, Role } from 'appwrite';
+
+// Create collection with team-based permissions
+await tablesdb.createTable(
+  databaseId,
+  tableId,
+  tableName,
+  [
+    // Collection permissions
+    Permission.create(Role.team(teamId, "member")),
+    Permission.read(Role.team(teamId, "member")),
+    Permission.update(Role.team(teamId, "admin")),
+    Permission.delete(Role.team(teamId, "owner"))
+  ]
+);
+\`\`\`
+
+#### Step 5: Query with Team Isolation
+
+Always filter queries by teamId to ensure data isolation:
+
+\`\`\`
+import { TablesDB, Query } from 'appwrite';
+
+// ALWAYS filter by teamId to ensure tenant isolation
+const documents = await tablesdb.listDocuments(
+  databaseId,
+  tableId,
+  [
+    Query.equal('teamId', teamId),  // Critical: filter by team
+    Query.orderDesc('$createdAt'),
+    Query.limit(25)
+  ]
+);
+\`\`\`
+
+#### Step 6: Storage Permissions
+
+Apply the same team-based permission pattern to storage:
+
+\`\`\`
+import { Storage, Permission, Role } from 'appwrite';
+
+// Create file with team-based permissions
+await storage.createFile(
+  bucketId,
+  fileId,
+  fileInput,
+  [
+    Permission.read(Role.team(teamId, "member")),
+    Permission.update(Role.team(teamId, "admin")),
+    Permission.delete(Role.team(teamId, "owner"))
+  ]
+);
+\`\`\`
+
+### Complete Member Management Implementation Pattern
+
+Here's a complete pattern for building member management UI and logic:
+
+**1. Team Creation Flow:**
+\`\`\`
+// When user creates account/organization
+const team = await teams.create(uniqueId(), 'Company Name');
+// Make creator an owner
+await teams.createMembership(team.$id, userId, ['owner']);
+\`\`\`
+
+**2. Invite Flow:**
+\`\`\`
+// Owner/admin invites new member
+const invite = await teams.createMembership(
+  teamId,
+  email,
+  ['member'],  // Default role
+  'https://yourapp.com/accept-invite'  // Redirect after accepting
+);
+// User receives email, clicks link, accepts invitation
+\`\`\`
+
+**3. Member List UI:**
+\`\`\`
+// Display all team members with their roles
+const memberships = await teams.listMemberships(teamId);
+// Show list with role badges and action buttons
+\`\`\`
+
+**4. Role Change:**
+\`\`\`
+// Admin/owner changes member role
+await teams.updateMembershipRoles(teamId, membershipId, ['admin']);
+\`\`\`
+
+**5. Member Removal:**
+\`\`\`
+// Remove member (with confirmation)
+await teams.deleteMembership(teamId, membershipId);
+\`\`\`
+
+### Permission Best Practices
+
+1. **Always Store teamId**: Every document/resource in a multi-tenant app should have a \`teamId\` field for filtering and isolation
+
+2. **Default Deny**: Don't grant permissions unless explicitly needed. Use minimal permission sets.
+
+3. **Role Hierarchy**: Design your roles to reflect natural hierarchies (owner > admin > member > viewer)
+
+4. **Permission Consistency**: Use the same permission pattern across database, storage, and other resources
+
+5. **Server-Side Validation**: Always validate team membership on the server side, even if client has permissions
+
+6. **Query Isolation**: Always include \`teamId\` in queries to prevent cross-tenant data leaks
+
+7. **Role Checks**: Before allowing sensitive operations, check the user's role in the team:
+   \`\`\`
+   const membership = await getCurrentUserMembership(teamId);
+   if (!membership.roles.includes('admin')) {
+     throw new Error('Insufficient permissions');
+   }
+   \`\`\`
+
+8. **Permission Inheritance**: Consider if child resources should inherit parent team permissions
+
+9. **Document-Level Permissions**: For fine-grained control, set permissions on individual documents while still using team roles
+
+10. **Audit Trail**: Log permission changes and team membership changes for security auditing
+
+### Common Multi-Tenancy Patterns
+
+**Pattern 1: Workspace-Based (e.g., Notion, Slack)**
+- Each workspace is a team
+- Users can belong to multiple teams
+- Resources belong to one team
+- Perfect for: Collaboration tools, project management
+
+**Pattern 2: Organization-Based (e.g., GitHub, GitLab)**
+- Each organization is a team
+- Resources belong to organization
+- Members have roles within organization
+- Perfect for: Enterprise SaaS, developer tools
+
+**Pattern 3: Project-Based (e.g., Linear, Asana)**
+- Each project is a team
+- Resources scoped to project
+- Members invited per project
+- Perfect for: Project management, task tracking
+
+### Debugging Permission Issues
+
+When permissions aren't working:
+
+1. **Check Team Membership**: Verify user is actually a member of the team
+2. **Verify Roles**: Ensure user has the required role (check \`membership.roles\`)
+3. **Check Permission Strings**: Verify permission strings match exactly (case-sensitive)
+4. **Query Filters**: Ensure \`teamId\` filters are applied correctly
+5. **Server vs Client**: Some operations require server SDK (like creating custom roles)
+6. **Session Context**: Permissions are evaluated in the context of the current session
+
+### Additional Resources
+
+${authProductLinks}
+
+For comprehensive permission patterns and examples, always refer to the official Appwrite documentation on Teams, Multi-tenancy, and Permissions.`;
 }
 
 /**
@@ -226,12 +627,17 @@ ${databaseProductLinks}
 
 ### Best Practices for Databases
 
-- **Permissions**: Always set appropriate permissions at table and row levels
-- **Query Optimization**: Use indexes for frequently queried fields to improve performance
-- **Data Validation**: Validate data before creating or updating rows
-- **Transactions**: Use transactions for operations that must succeed or fail together
-- **Pagination**: Always implement pagination for large datasets to improve performance
-- **Type Safety**: Use type-safe models when available in your SDK for better code quality`;
+- **SDK Usage**: Always use \`TablesDB\` instead of \`Databases\` in the SDKs
+- **Permissions & Multi-Tenancy**: ALWAYS use team/member-based roles for permissions (see Permissions & Multi-Tenancy section above). Never use user-specific permissions in multi-tenant applications
+- **Tenant Isolation**: Always include \`teamId\` fields in your documents and filter queries by \`teamId\` to ensure complete data isolation between tenants
+- **Permission Patterns**: Apply team roles (owner, admin, member, viewer) consistently across all collections. Use Role.team() for all permission checks
+- **Query Security**: Every multi-tenant query MUST include a \`teamId\` filter to prevent cross-tenant data access
+- **Collection Permissions**: Set collection-level permissions using team roles, then override at document level when needed
+- **Query Optimization**: Use indexes for frequently queried fields, especially on \`teamId\` and commonly filtered fields
+- **Data Validation**: Validate data before creating or updating rows, including team membership validation
+- **Transactions**: Use transactions for operations that must succeed or fail together, ensuring atomicity across tenant boundaries
+- **Pagination**: Always implement pagination for large datasets to improve performance and reduce response sizes
+- **Type Safety**: Use type-safe models when available in your SDK for better code quality and fewer runtime errors`;
 }
 
 /**
@@ -247,11 +653,60 @@ ${storageProductLinks}
 
 ### Best Practices for Storage
 
-- **File Size Limits**: Set appropriate file size limits to prevent abuse
-- **File Types**: Validate file types before upload to ensure security
-- **Permissions**: Set proper permissions on buckets and files to control access
-- **Cleanup**: Implement cleanup strategies for unused or temporary files
-- **Virus Scanning**: Consider implementing virus scanning for uploaded files`;
+- **Permissions & Multi-Tenancy**: ALWAYS use team/member-based roles for storage permissions (see Permissions & Multi-Tenancy section above). Apply Role.team() permissions to buckets and files for proper tenant isolation
+- **Bucket Organization**: Consider organizing files by team/tenant using folder structures or bucket naming conventions for easier management
+- **Tenant Isolation**: When querying files, always filter by metadata (e.g., \`teamId\`) to ensure users only access files from their teams
+- **File Size Limits**: Set appropriate file size limits to prevent abuse and manage costs
+- **File Types**: Validate file types before upload to ensure security and prevent malicious uploads
+- **Permission Patterns**: Use team roles (owner, admin, member, viewer) consistently for bucket and file permissions, matching your database permission model
+- **Cleanup**: Implement cleanup strategies for unused or temporary files, especially when teams are deleted
+- **Virus Scanning**: Consider implementing virus scanning for uploaded files to protect all tenants
+- **Access Control**: Validate team membership before allowing file uploads/downloads, even if permissions are set correctly`;
+}
+
+/**
+ * Maps SDK names to their corresponding template paths in the Appwrite templates repository
+ * @param {string} sdk
+ * @returns {string|null} Template path or null if no template available
+ */
+function getFunctionTemplatePath(sdk) {
+	/** @type {Record<string, string>} */
+	const templateMap = {
+		javascript: 'node/starter',
+		'react-native': 'node/starter',
+		python: 'python/starter',
+		php: 'php/starter',
+		go: 'go/starter',
+		flutter: 'dart/starter',
+		swift: 'swift/starter',
+		kotlin: 'kotlin/starter',
+		ruby: 'ruby/starter',
+		dotnet: 'dotnet/starter'
+	};
+	return templateMap[sdk] || null;
+}
+
+/**
+ * Generates template links section for functions
+ * @param {string} sdk
+ * @returns {string}
+ */
+function generateFunctionTemplateLinks(sdk) {
+	const templatePath = getFunctionTemplatePath(sdk);
+	if (!templatePath) {
+		return '';
+	}
+	
+	const templateUrl = `https://github.com/appwrite/templates/tree/main/${templatePath}`;
+	const templatesBaseUrl = 'https://github.com/appwrite/templates';
+	
+	return `### Starter Templates
+
+For getting started with Appwrite Functions, use the official starter template for your runtime:
+
+- **${SDK_OPTIONS[sdk]?.name || sdk} Starter**: [View Template](${templateUrl})
+
+For more templates and examples, see the [Appwrite Templates Repository](${templatesBaseUrl}).`;
 }
 
 /**
@@ -261,9 +716,25 @@ ${storageProductLinks}
  */
 async function generateFunctionsSection(sdk, framework) {
 	const { functionsProductLinks } = await import('./languages/common/products.js');
+	const templateLinks = generateFunctionTemplateLinks(sdk);
+	
 	return `## Functions
 
 ${functionsProductLinks}
+
+${templateLinks}
+
+### When to Use Starter Templates
+
+**ALWAYS use starter templates from the [Appwrite Templates Repository](https://github.com/appwrite/templates) when building functions for:**
+
+- **Scheduled Tasks**: Functions that run on a schedule (cron jobs, periodic cleanup, etc.)
+- **Event-Driven Tasks**: Functions triggered by Appwrite events (database changes, storage uploads, user events, etc.)
+- **Background Processing**: Long-running or resource-intensive operations
+- **Integration Functions**: Functions that integrate with third-party services (APIs, webhooks, etc.)
+- **Complex Functions**: Any function that requires specific runtime configuration or dependencies
+
+**Why use templates?** Starter templates provide the correct project structure, dependencies, and configuration needed for functions to build and execute successfully. They ensure proper handling of environment variables, logging, error handling, and Appwrite SDK initialization.
 
 ### Best Practices for Functions
 
@@ -272,7 +743,8 @@ ${functionsProductLinks}
 - **Environment Variables**: Use environment variables for configuration, not hardcoded values
 - **Logging**: Implement proper logging for debugging and monitoring
 - **Security**: Validate all inputs and never trust user-provided data
-- **Resource Limits**: Be mindful of memory and CPU limits for function executions`;
+- **Resource Limits**: Be mindful of memory and CPU limits for function executions
+- **Template Usage**: Start with official templates for scheduled and event-driven functions to ensure proper setup`;
 }
 
 /**
