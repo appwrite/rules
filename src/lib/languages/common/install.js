@@ -129,6 +129,7 @@ Install-Package Appwrite
 export const dartInstall = (version, isServer = false) => {
 	const sdkName = isServer ? 'Dart Server SDK' : 'Flutter SDK';
 	const pubCommand = isServer ? 'dart pub get' : 'flutter pub get';
+	const packageName = isServer ? 'dart_appwrite' : 'appwrite';
 	
 	return `## SDK Installation
 
@@ -136,7 +137,7 @@ Add the Appwrite ${sdkName} to your \`pubspec.yaml\`:
 
 \`\`\`yaml
 dependencies:
-  appwrite: ^${version}
+  ${packageName}: ^${version}
 \`\`\`
 
 Then install it:
