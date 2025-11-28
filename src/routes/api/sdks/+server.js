@@ -1,9 +1,6 @@
 import { SDK_OPTIONS } from '$lib/rules-generator.js';
 import { json } from '@sveltejs/kit';
 
-/**
- * @param {Request} request
- */
 export async function GET() {
 	try {
 		const sdks = Object.entries(SDK_OPTIONS).map(([key, value]) => ({
