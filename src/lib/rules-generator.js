@@ -118,14 +118,14 @@ export async function generateRules(config) {
 	// Generate all sections in parallel
 	// Permissions section is mandatory for all products
 	const sections = await Promise.all([
-		features.includes('auth') ? generateAuthSection(sdk, framework) : Promise.resolve(''),
-		generatePermissionsSection(sdk, framework),
-		features.includes('database') ? generateDatabaseSection(sdk, framework) : Promise.resolve(''),
-		features.includes('storage') ? generateStorageSection(sdk, framework) : Promise.resolve(''),
-		features.includes('functions') ? generateFunctionsSection(sdk, framework) : Promise.resolve(''),
-		features.includes('messaging') ? generateMessagingSection(sdk, framework) : Promise.resolve(''),
-		features.includes('sites') ? generateSitesSection(sdk, framework) : Promise.resolve(''),
-		features.includes('realtime') ? generateRealtimeSection(sdk, framework) : Promise.resolve('')
+		features.includes('auth') ? generateAuthSection() : Promise.resolve(''),
+		generatePermissionsSection(sdk),
+		features.includes('database') ? generateDatabaseSection() : Promise.resolve(''),
+		features.includes('storage') ? generateStorageSection() : Promise.resolve(''),
+		features.includes('functions') ? generateFunctionsSection(sdk) : Promise.resolve(''),
+		features.includes('messaging') ? generateMessagingSection() : Promise.resolve(''),
+		features.includes('sites') ? generateSitesSection() : Promise.resolve(''),
+		features.includes('realtime') ? generateRealtimeSection() : Promise.resolve('')
 	]);
 	
 	const mcpSection = includeMCP ? `${generateMCPRecommendation()}\n\n` : '';
@@ -194,11 +194,9 @@ Configure your Appwrite client for ${SDK_OPTIONS[sdk]?.name || sdk}.`;
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateAuthSection(sdk, framework) {
+async function generateAuthSection() {
 	const { authProductLinks } = await import('./languages/common/products.js');
 	return `## Authentication & Teams
 
@@ -228,10 +226,9 @@ When building applications that involve multiple users or tenants:
 
 /**
  * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generatePermissionsSection(sdk, framework) {
+async function generatePermissionsSection(sdk) {
 	const { authProductLinks } = await import('./languages/common/products.js');
 	const { getPermissionExamples } = await import('./languages/common/permissions-examples.js');
 	const examples = getPermissionExamples(sdk);
@@ -493,11 +490,9 @@ function getLanguageFromSdk(sdk) {
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateDatabaseSection(sdk, framework) {
+async function generateDatabaseSection() {
 	const { databaseProductLinks } = await import('./languages/common/products.js');
 	return `## Database Operations
 
@@ -519,11 +514,9 @@ ${databaseProductLinks}
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateStorageSection(sdk, framework) {
+async function generateStorageSection() {
 	const { storageProductLinks } = await import('./languages/common/products.js');
 	return `## Storage Operations
 
@@ -589,10 +582,9 @@ For more templates and examples, see the [Appwrite Templates Repository](${templ
 
 /**
  * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateFunctionsSection(sdk, framework) {
+async function generateFunctionsSection(sdk) {
 	const { functionsProductLinks } = await import('./languages/common/products.js');
 	const templateLinks = generateFunctionTemplateLinks(sdk);
 	
@@ -626,11 +618,9 @@ ${templateLinks}
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateMessagingSection(sdk, framework) {
+async function generateMessagingSection() {
 	const { messagingProductLinks } = await import('./languages/common/products.js');
 	return `## Messaging
 
@@ -647,11 +637,9 @@ ${messagingProductLinks}
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateSitesSection(sdk, framework) {
+async function generateSitesSection() {
 	const { sitesProductLinks } = await import('./languages/common/products.js');
 	return `## Sites
 
@@ -667,11 +655,9 @@ ${sitesProductLinks}
 }
 
 /**
- * @param {string} sdk
- * @param {string} framework
  * @returns {Promise<string>}
  */
-async function generateRealtimeSection(sdk, framework) {
+async function generateRealtimeSection() {
 	const { realtimeProductLinks } = await import('./languages/common/products.js');
 	return `## Realtime Subscriptions
 
