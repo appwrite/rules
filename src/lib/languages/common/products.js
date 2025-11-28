@@ -8,8 +8,6 @@
  */
 export const authProductLinks = `For detailed authentication and session management instructions, see the [Authentication Quick Start Guide](https://appwrite.io/docs/products/auth/quick-start).
 
-For session management, login, logout, and authentication state checking, see the [Authentication Documentation](https://appwrite.io/docs/products/auth/quick-start).
-
 For OAuth providers and social authentication, see the [OAuth2 Documentation](https://appwrite.io/docs/products/auth/oauth2).
 
 For server-side rendering (SSR) authentication, see the [SSR Login Guide](https://appwrite.io/docs/products/auth/server-side-rendering).
