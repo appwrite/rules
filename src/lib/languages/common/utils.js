@@ -49,12 +49,11 @@ export const quickStartUrls = {
 	nodejs: 'https://appwrite.io/docs/quick-starts/nodejs',
 	vanilla: 'https://appwrite.io/docs/quick-starts/web',
 	
-	// React Native
-	'react-native': 'https://appwrite.io/docs/quick-starts/react-native',
-	
 	// Mobile Client SDKs
 	apple: 'https://appwrite.io/docs/quick-starts/apple',
 	android: 'https://appwrite.io/docs/quick-starts/android',
+	flutter: 'https://appwrite.io/docs/quick-starts/flutter',
+	'react-native': 'https://appwrite.io/docs/quick-starts/react-native',
 	
 	// Server SDKs
 	python: 'https://appwrite.io/docs/quick-starts/python',
@@ -63,7 +62,6 @@ export const quickStartUrls = {
 	ruby: 'https://appwrite.io/docs/quick-starts/ruby',
 	dotnet: 'https://appwrite.io/docs/quick-starts/dotnet',
 	dart: 'https://appwrite.io/docs/quick-starts/dart',
-	flutter: 'https://appwrite.io/docs/quick-starts/flutter',
 	kotlin: 'https://appwrite.io/docs/quick-starts/kotlin',
 	swift: 'https://appwrite.io/docs/quick-starts/swift'
 };
@@ -84,16 +82,16 @@ export const frameworkNames = {
 	tanstack: 'TanStack',
 	nodejs: 'Node.js',
 	vanilla: 'Web',
-	'react-native': 'React Native',
 	apple: 'Apple',
 	android: 'Android',
+	flutter: 'Flutter',
+	'react-native': 'React Native',
 	python: 'Python',
 	php: 'PHP',
 	go: 'Go',
 	ruby: 'Ruby',
 	dotnet: '.NET',
 	dart: 'Dart',
-	flutter: 'Flutter',
 	kotlin: 'Kotlin',
 	swift: 'Swift'
 };

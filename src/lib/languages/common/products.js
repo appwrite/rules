@@ -4,13 +4,6 @@
  */
 
 /**
- * Product documentation sections that appear in every SDK initialization
- */
-export const commonProductLinks = `For TablesDB operations (create, read, update, delete rows), see the [Rows Documentation](https://appwrite.io/docs/products/databases/rows).
-
-For Storage operations (upload, download files), see the [Storage Documentation](https://appwrite.io/docs/products/storage/upload-download).`;
-
-/**
  * Authentication product documentation
  */
 export const authProductLinks = `For detailed authentication and session management instructions, see the [Authentication Quick Start Guide](https://appwrite.io/docs/products/auth/quick-start).
