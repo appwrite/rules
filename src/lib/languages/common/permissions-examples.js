@@ -12,7 +12,7 @@ await tablesDB.createRow({
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
-  data: { title: 'My Document' },
+  data: { title: 'My Row' },
   permissions: [
     Permission.read(Role.user('<USER_ID>')),
     Permission.write(Role.user('<USER_ID>'))
@@ -25,7 +25,7 @@ await tablesDB.createRow({
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
-  data: { title: 'My Document' },
+  data: { title: 'My Row' },
   permissions: [
     Permission.read(Role.team('<TEAM_ID>', 'owner')),
     Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -169,13 +169,13 @@ const client = new Client()
 
 const tablesDB = new TablesDB(client);
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 await tablesDB.createRow({
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
   data: {
-    title: 'My Document',
+    title: 'My Row',
     teamId: '<TEAM_ID>',  // Always store teamId for querying
     // ... other fields
   },
@@ -205,7 +205,7 @@ await tablesDB.createTable({
   tableId: '<TABLE_ID>',
   name: '<TABLE_NAME>',
   permissions: [
-    // Collection permissions
+    // Table permissions
     Permission.create(Role.team('<TEAM_ID>', 'member')),
     Permission.read(Role.team('<TEAM_ID>', 'member')),
     Permission.update(Role.team('<TEAM_ID>', 'admin')),
@@ -346,7 +346,7 @@ await tablesDB.createRow({
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
-  data: { title: 'My Document' },
+  data: { title: 'My Row' },
   permissions: [
     Permission.read(Role.user('<USER_ID>')),
     Permission.write(Role.user('<USER_ID>'))
@@ -359,7 +359,7 @@ await tablesDB.createRow({
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
-  data: { title: 'My Document' },
+  data: { title: 'My Row' },
   permissions: [
     Permission.read(Role.team('<TEAM_ID>', 'owner')),
     Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -499,7 +499,7 @@ await tablesDB.createRow({
   tableId: '<TABLE_ID>',
   rowId: '<ROW_ID>',
   data: {
-    title: 'My Document',
+    title: 'My Row',
     teamId: '<TEAM_ID>',
   },
   permissions: [
@@ -664,7 +664,7 @@ tables_db.create_row(
     database_id='<DATABASE_ID>',
     table_id='<TABLE_ID>',
     row_id='<ROW_ID>',
-    data={'title': 'My Document'},
+    data={'title': 'My Row'},
     permissions=[
         Permission.read(Role.user('<USER_ID>')),
         Permission.write(Role.user('<USER_ID>'))
@@ -686,7 +686,7 @@ tables_db.create_row(
     database_id='<DATABASE_ID>',
     table_id='<TABLE_ID>',
     row_id='<ROW_ID>',
-    data={'title': 'My Document'},
+    data={'title': 'My Row'},
     permissions=[
         Permission.read(Role.team('<TEAM_ID>', 'owner')),
         Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -843,13 +843,13 @@ client.set_session('')
 
 tables_db = TablesDB(client)
 
-# Create document with team-based permissions
+# Create row with team-based permissions
 tables_db.create_row(
     database_id='<DATABASE_ID>',
     table_id='<TABLE_ID>',
     row_id='<ROW_ID>',
     data={
-        'title': 'My Document',
+        'title': 'My Row',
         'teamId': '<TEAM_ID>',  # Always store teamId for querying
     },
     permissions=[
@@ -1042,7 +1042,7 @@ $tablesDB->createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: ['title' => 'My Document'],
+    data: ['title' => 'My Row'],
     permissions: [
         Permission::read(Role::user('<USER_ID>')),
         Permission::write(Role::user('<USER_ID>'))
@@ -1066,7 +1066,7 @@ $tablesDB->createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: ['title' => 'My Document'],
+    data: ['title' => 'My Row'],
     permissions: [
         Permission::read(Role::team('<TEAM_ID>', 'owner')),
         Permission::read(Role::team('<TEAM_ID>', 'admin')),
@@ -1237,13 +1237,13 @@ $client = (new Client())
 
 $tablesDB = new TablesDB($client);
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 $tablesDB->createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
     data: [
-        'title' => 'My Document',
+        'title' => 'My Row',
         'teamId' => '<TEAM_ID>',  // Always store teamId for querying
     ],
     permissions: [
@@ -1451,7 +1451,7 @@ tablesDB.CreateRow(
     "<TABLE_ID>",
     "<ROW_ID>",
     map[string]interface{}{
-        "title": "My Document",
+        "title": "My Row",
     },
     []interface{}{
         models.PermissionRead(models.RoleUser("<USER_ID>")),
@@ -1480,7 +1480,7 @@ tablesDB.CreateRow(
     "<TABLE_ID>",
     "<ROW_ID>",
     map[string]interface{}{
-        "title": "My Document",
+        "title": "My Row",
     },
     []interface{}{
         models.PermissionRead(models.RoleTeam("<TEAM_ID>", "owner")),
@@ -1698,13 +1698,13 @@ client := client.New(
 
 tablesDB := tablesdb.New(client)
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 tablesDB.CreateRow(
     "<DATABASE_ID>",
     "<TABLE_ID>",
     "<ROW_ID>",
     map[string]interface{}{
-        "title": "My Document",
+        "title": "My Row",
         "teamId": "<TEAM_ID>",  // Always store teamId for querying
     },
     []interface{}{
@@ -1949,7 +1949,7 @@ tables_db.create_row(
   database_id: '<DATABASE_ID>',
   table_id: '<TABLE_ID>',
   row_id: '<ROW_ID>',
-  data: {'title' => 'My Document'},
+  data: {'title' => 'My Row'},
   permissions: [
     Permission.read(Role.user('<USER_ID>')),
     Permission.write(Role.user('<USER_ID>'))
@@ -1971,7 +1971,7 @@ tables_db.create_row(
   database_id: '<DATABASE_ID>',
   table_id: '<TABLE_ID>',
   row_id: '<ROW_ID>',
-  data: {'title' => 'My Document'},
+  data: {'title' => 'My Row'},
   permissions: [
     Permission.read(Role.team('<TEAM_ID>', 'owner')),
     Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -2138,13 +2138,13 @@ client = Client.new
 
 tables_db = TablesDB.new(client)
 
-# Create document with team-based permissions
+# Create row with team-based permissions
 tables_db.create_row(
   database_id: '<DATABASE_ID>',
   table_id: '<TABLE_ID>',
   row_id: '<ROW_ID>',
   data: {
-    'title' => 'My Document',
+    'title' => 'My Row',
     'teamId' => '<TEAM_ID>',  # Always store teamId for querying
   },
   permissions: [
@@ -2339,7 +2339,7 @@ await tablesDB.CreateRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: new { title = "My Document" },
+    data: new { title = "My Row" },
     permissions: new List<string> {
         Permission.Read(Role.User("<USER_ID>")),
         Permission.Write(Role.User("<USER_ID>"))
@@ -2361,7 +2361,7 @@ await tablesDB.CreateRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: new { title = "My Document" },
+    data: new { title = "My Row" },
     permissions: new List<string> {
         Permission.Read(Role.Team("<TEAM_ID>", "owner")),
         Permission.Read(Role.Team("<TEAM_ID>", "admin")),
@@ -2529,13 +2529,13 @@ Client client = new Client()
 
 TablesDB tablesDB = new TablesDB(client);
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 await tablesDB.CreateRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
     data: new {
-        title = "My Document",
+        title = "My Row",
         teamId = "<TEAM_ID>",  // Always store teamId for querying
     },
     permissions: new List<string> {
@@ -2730,7 +2730,7 @@ try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: ["title": "My Document"],
+    data: ["title": "My Row"],
     permissions: [
         Permission.read(Role.user("<USER_ID>")),
         Permission.write(Role.user("<USER_ID>"))
@@ -2750,7 +2750,7 @@ try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: ["title": "My Document"],
+    data: ["title": "My Row"],
     permissions: [
         Permission.read(Role.team("<TEAM_ID>", "owner")),
         Permission.read(Role.team("<TEAM_ID>", "admin")),
@@ -2897,13 +2897,13 @@ let client = Client()
 
 let tablesDB = TablesDB(client)
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
     data: [
-        "title": "My Document",
+        "title": "My Row",
         "teamId": "<TEAM_ID>",  // Always store teamId for querying
     ],
     permissions: [
@@ -3081,7 +3081,7 @@ tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
-    data = mapOf("title" to "My Document"),
+    data = mapOf("title" to "My Row"),
     permissions = listOf(
         Permission.read(Role.user("<USER_ID>")),
         Permission.write(Role.user("<USER_ID>"))
@@ -3104,7 +3104,7 @@ tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
-    data = mapOf("title" to "My Document"),
+    data = mapOf("title" to "My Row"),
     permissions = listOf(
         Permission.read(Role.team("<TEAM_ID>", "owner")),
         Permission.read(Role.team("<TEAM_ID>", "admin")),
@@ -3278,13 +3278,13 @@ val client = Client()
 
 val tablesDB = TablesDB(client)
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
     data = mapOf(
-        "title" to "My Document",
+        "title" to "My Row",
         "teamId" to "<TEAM_ID>",  // Always store teamId for querying
     ),
     permissions = listOf(
@@ -3481,7 +3481,7 @@ let row = try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: ["title": "My Document"],
+    data: ["title": "My Row"],
     permissions: [
         Permission.read(Role.user("<USER_ID>")),
         Permission.write(Role.user("<USER_ID>"))
@@ -3500,7 +3500,7 @@ let row = try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
-    data: ["title": "My Document"],
+    data: ["title": "My Row"],
     permissions: [
         Permission.read(Role.team("<TEAM_ID>", "owner")),
         Permission.read(Role.team("<TEAM_ID>", "admin")),
@@ -3640,13 +3640,13 @@ let client = Client()
 
 let tablesDB = TablesDB(client)
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 let row = try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
     rowId: "<ROW_ID>",
     data: [
-        "title": "My Document",
+        "title": "My Row",
         "teamId": "<TEAM_ID>",  // Always store teamId for querying
     ],
     permissions: [
@@ -3816,7 +3816,7 @@ tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
-    data = mapOf("title" to "My Document"),
+    data = mapOf("title" to "My Row"),
     permissions = listOf(
         Permission.read(Role.user("<USER_ID>")),
         Permission.write(Role.user("<USER_ID>"))
@@ -3838,7 +3838,7 @@ tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
-    data = mapOf("title" to "My Document"),
+    data = mapOf("title" to "My Row"),
     permissions = listOf(
         Permission.read(Role.team("<TEAM_ID>", "owner")),
         Permission.read(Role.team("<TEAM_ID>", "admin")),
@@ -4003,13 +4003,13 @@ val client = Client(context)
 
 val tablesDB = TablesDB(client)
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
     rowId = "<ROW_ID>",
     data = mapOf(
-        "title" to "My Document",
+        "title" to "My Row",
         "teamId" to "<TEAM_ID>",  // Always store teamId for querying
     ),
     permissions = listOf(
@@ -4199,7 +4199,7 @@ final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: {'title': 'My Document'},
+    data: {'title': 'My Row'},
     permissions: [
         Permission.read(Role.user('<USER_ID>')),
         Permission.write(Role.user('<USER_ID>'))
@@ -4218,7 +4218,7 @@ final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: {'title': 'My Document'},
+    data: {'title': 'My Row'},
     permissions: [
         Permission.read(Role.team('<TEAM_ID>', 'owner')),
         Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -4359,13 +4359,13 @@ final client = Client()
 
 final tablesDB = TablesDB(client);
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
     data: {
-        'title': 'My Document',
+        'title': 'My Row',
         'teamId': '<TEAM_ID>',  // Always store teamId for querying
     },
     permissions: [
@@ -4536,7 +4536,7 @@ final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: {'title': 'My Document'},
+    data: {'title': 'My Row'},
     permissions: [
         Permission.read(Role.user('<USER_ID>')),
         Permission.write(Role.user('<USER_ID>'))
@@ -4555,7 +4555,7 @@ final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
-    data: {'title': 'My Document'},
+    data: {'title': 'My Row'},
     permissions: [
         Permission.read(Role.team('<TEAM_ID>', 'owner')),
         Permission.read(Role.team('<TEAM_ID>', 'admin')),
@@ -4696,13 +4696,13 @@ final client = Client()
 
 final tablesDB = TablesDB(client);
 
-// Create document with team-based permissions
+// Create row with team-based permissions
 final row = await tablesDB.createRow(
     databaseId: '<DATABASE_ID>',
     tableId: '<TABLE_ID>',
     rowId: '<ROW_ID>',
     data: {
-        'title': 'My Document',
+        'title': 'My Row',
         'teamId': '<TEAM_ID>',  // Always store teamId for querying
     },
     permissions: [

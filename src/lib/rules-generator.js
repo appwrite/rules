@@ -255,7 +255,7 @@ ${examples.avoidUserPermissions}
 
 **Problems with user-specific permissions:**
 - Hard to scale when users need to share resources
-- Difficult to add/remove access without updating every document
+- Difficult to add/remove access without updating every row
 - No way to represent organizational hierarchies
 - Poor support for collaborative features
 - Maintenance nightmare as teams grow
@@ -267,7 +267,7 @@ ${examples.preferTeamPermissions}
 
 **Benefits of team/member-based roles:**
 - Automatic access for all team members based on their role
-- Easy to add/remove members without touching documents
+- Easy to add/remove members without touching rows
 - Scales naturally as teams grow
 - Supports organizational hierarchies and complex permissions
 - Industry-standard pattern for SaaS applications
@@ -342,19 +342,19 @@ ${examples.listTeams}
 ${examples.getUserRole}
 \`\`\`
 
-#### Step 4: Apply Permissions in Collections
+#### Step 4: Apply Permissions in Tables
 
-When creating documents in multi-tenant applications, always use team roles:
+When creating rows in multi-tenant applications, always use team roles:
 
-**Database Collections:**
+**Database Tables:**
 
 \`\`\`${getLanguageFromSdk(sdk)}
 ${examples.createRow}
 \`\`\`
 
-**Collection-Level Permissions:**
+**Table-Level Permissions:**
 
-When creating collections, set default permissions:
+When creating tables, set default permissions:
 
 \`\`\`${getLanguageFromSdk(sdk)}
 ${examples.createTable}
@@ -407,7 +407,7 @@ ${examples.memberRemoval}
 
 ### Permission Best Practices
 
-1. **Always Store teamId**: Every document/resource in a multi-tenant app should have a \`teamId\` field for filtering and isolation
+1. **Always Store teamId**: Every row/resource in a multi-tenant app should have a \`teamId\` field for filtering and isolation
 
 2. **Default Deny**: Don't grant permissions unless explicitly needed. Use minimal permission sets.
 
@@ -426,7 +426,7 @@ ${examples.roleCheck}
 
 8. **Permission Inheritance**: Consider if child resources should inherit parent team permissions
 
-9. **Document-Level Permissions**: For fine-grained control, set permissions on individual documents while still using team roles
+9. **Row-Level Permissions**: For fine-grained control, set permissions on individual rows while still using team roles
 
 10. **Audit Trail**: Log permission changes and team membership changes for security auditing
 
@@ -507,10 +507,10 @@ ${databaseProductLinks}
 
 - **SDK Usage**: Always use \`TablesDB\` instead of \`Databases\` in the SDKs
 - **Permissions & Multi-Tenancy**: ALWAYS use team/member-based roles for permissions (see Permissions & Multi-Tenancy section above). Never use user-specific permissions in multi-tenant applications
-- **Tenant Isolation**: Always include \`teamId\` fields in your documents and filter queries by \`teamId\` to ensure complete data isolation between tenants
-- **Permission Patterns**: Apply team roles (owner, admin, member, viewer) consistently across all collections. Use Role.team() for all permission checks
+- **Tenant Isolation**: Always include \`teamId\` fields in your rows and filter queries by \`teamId\` to ensure complete data isolation between tenants
+- **Permission Patterns**: Apply team roles (owner, admin, member, viewer) consistently across all tables. Use Role.team() for all permission checks
 - **Query Security**: Every multi-tenant query MUST include a \`teamId\` filter to prevent cross-tenant data access
-- **Collection Permissions**: Set collection-level permissions using team roles, then override at document level when needed
+- **Table Permissions**: Set table-level permissions using team roles, then override at row level when needed
 - **Query Optimization**: Use indexes for frequently queried fields, especially on \`teamId\` and commonly filtered fields
 - **Data Validation**: Validate data before creating or updating rows, including team membership validation
 - **Transactions**: Use transactions for operations that must succeed or fail together, ensuring atomicity across tenant boundaries
