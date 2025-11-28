@@ -72,6 +72,94 @@ pnpm dev
 
 The generated rules file can be used in Cursor IDE to provide AI-assisted development guidance specific to your Appwrite setup.
 
+## API Endpoints
+
+The application exposes REST API endpoints for programmatic access to rule generation.
+
+### Get Available SDKs and Frameworks
+
+**GET** `/api/sdks`
+
+Returns a list of all available SDKs, their frameworks, and available features.
+
+**Response:**
+```json
+{
+  "sdks": [
+    {
+      "id": "javascript",
+      "name": "JavaScript/TypeScript",
+      "frameworks": ["nextjs", "react", "vue", ...],
+      "importSyntax": "import",
+      "exportSyntax": "export",
+      "asyncSyntax": "async/await"
+    },
+    ...
+  ],
+  "availableFeatures": ["auth", "database", "storage", "functions", "messaging", "sites", "realtime"]
+}
+```
+
+### Generate Rules
+
+**GET** `/api/rules`
+
+Generate rules using query parameters.
+
+**Query Parameters:**
+- `sdk` (required): SDK identifier (e.g., `javascript`, `python`, `go`)
+- `framework` (required): Framework identifier (e.g., `nextjs`, `react`, `flask`)
+- `features` (optional): Comma-separated list of features (default: `auth`)
+  - Available: `auth`, `database`, `storage`, `functions`, `messaging`, `sites`, `realtime`
+  - Special: `all` - includes all available features
+- `mcp` (optional): Include MCP recommendations (`true` or `false`, default: `false`)
+- `format` (optional): Response format (`text` or `json`, default: `text`)
+
+**Example:**
+```bash
+# Get rules as markdown text
+curl "http://localhost:5173/api/rules?sdk=javascript&framework=nextjs&features=auth,database&format=text"
+
+# Get all features
+curl "http://localhost:5173/api/rules?sdk=javascript&framework=nextjs&features=all"
+
+# Get rules as JSON
+curl "http://localhost:5173/api/rules?sdk=python&framework=flask&features=auth,storage&format=json"
+```
+
+**Response (format=text):**
+- Content-Type: `text/markdown; charset=utf-8`
+- Returns the generated rules as markdown text
+- Includes `Content-Disposition` header for file download
+
+**Response (format=json):**
+```json
+{
+  "sdk": "javascript",
+  "framework": "nextjs",
+  "features": ["auth", "database"],
+  "includeMCP": false,
+  "rules": "---\ndescription: You are an expert developer...\n---\n\n# Appwrite Development Rules\n..."
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid SDK or framework
+- `500 Internal Server Error`: Server error during rule generation
+
+**Example Usage:**
+
+```javascript
+// Fetch rules using fetch API
+const response = await fetch('/api/rules?sdk=javascript&framework=nextjs&features=auth,database');
+const rules = await response.text();
+
+// Get all features as JSON
+const response = await fetch('/api/rules?sdk=javascript&framework=nextjs&features=all&format=json');
+const data = await response.json();
+console.log(data.rules);
+```
+
 ## Development
 
 ### Available Scripts
@@ -98,6 +186,11 @@ appwrite-cursor-rules/
 │   │   ├── rules-generator.js  # Main rules generation logic
 │   │   └── utils/              # Utility functions
 │   └── routes/
+│       ├── api/
+│       │   ├── rules/
+│       │   │   └── +server.js   # API endpoint for generating rules
+│       │   └── sdks/
+│       │       └── +server.js   # API endpoint for listing SDKs
 │       ├── +page.svelte        # Main application page
 │       └── +layout.svelte      # Layout component
 ├── scripts/
