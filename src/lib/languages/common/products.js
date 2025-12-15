@@ -10,8 +10,6 @@ export const authProductLinks = `For detailed authentication and session managem
 
 For OAuth providers and social authentication, see the [OAuth2 Documentation](https://appwrite.io/docs/products/auth/oauth2).
 
-For server-side rendering (SSR) authentication, see the [SSR Login Guide](https://appwrite.io/docs/products/auth/server-side-rendering).
-
 For Teams management, team invitations, and team-based permissions, see the [Teams Documentation](https://appwrite.io/docs/products/auth/teams).
 
 For team invites and membership management, see the [Team Invites Guide](https://appwrite.io/docs/products/auth/team-invites).

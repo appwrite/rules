@@ -4,12 +4,6 @@
 
 export const npmInstall = `npm install appwrite`;
 
-export const yarnInstall = `yarn add appwrite`;
-
-export const pnpmInstall = `pnpm add appwrite`;
-
-export const bunInstall = `bun add appwrite`;
-
 /**
  * JavaScript/TypeScript installation section
  * @param {string} [packageName] - Package name (default: 'appwrite')
@@ -24,29 +18,18 @@ ${title} using npm:
 npm install ${packageName}
 \`\`\`
 
-Or using yarn:
-
-\`\`\`bash
-yarn add ${packageName}
-\`\`\`
-
-Or using pnpm:
-
-\`\`\`bash
-pnpm add ${packageName}
-\`\`\`
-
-Or using bun:
-
-\`\`\`bash
-bun add ${packageName}
-\`\`\``;
+You can also use yarn, pnpm, or bun instead.`;
 }
 
 /**
  * Default JavaScript installation (export as constant for backwards compatibility)
  */
 export const jsInstallDefault = jsInstall();
+
+/**
+ * Node.js Server SDK installation section for SSR frameworks
+ */
+export const nodeAppwriteInstall = jsInstall('node-appwrite', 'Install the Appwrite Node.js Server SDK');
 
 /**
  * Python installation section
