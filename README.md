@@ -1,6 +1,6 @@
-# Appwrite Cursor Rules Generator
+# Appwrite AGENTS.md Generator
 
-A web application for generating comprehensive Cursor rules (`.mdc` files) for Appwrite development across multiple SDKs and frameworks. This tool helps developers create customized development rules that include best practices, code examples, and guidance for building applications with Appwrite.
+A web application for generating comprehensive AGENTS.md files for Appwrite development across multiple SDKs and frameworks. This tool helps developers create customized AI coding assistant instructions that include best practices, code examples, and guidance for building applications with Appwrite.
 
 ## Features
 
@@ -14,8 +14,7 @@ A web application for generating comprehensive Cursor rules (`.mdc` files) for A
   - Messaging
   - Sites
   - Realtime Subscriptions
-  - MCP (Model Context Protocol) recommendations
-- **Export Options**: Copy to clipboard or download as `.mdc` file
+- **Export Options**: Copy to clipboard or download as `AGENTS.md` file
 - **Best Practices**: Generated rules include comprehensive best practices, multi-tenancy patterns, and security guidelines
 
 ## Supported SDKs and Frameworks
@@ -68,9 +67,9 @@ pnpm dev
 2. **Select Framework**: Pick the framework you're using (options depend on the selected SDK)
 3. **Choose Features**: Check the boxes for the Appwrite features you want to include in your rules
 4. **Generate Rules**: Click the "Generate Rules" button
-5. **Export**: Copy the rules to your clipboard or download as a `.mdc` file
+5. **Export**: Copy the rules to your clipboard or download as a `AGENTS.md` file
 
-The generated rules file can be used in Cursor IDE to provide AI-assisted development guidance specific to your Appwrite setup.
+The generated AGENTS.md file can be used with AI coding assistants (Cursor, GitHub Copilot, OpenAI Codex, etc.) to provide AI-assisted development guidance specific to your Appwrite setup.
 
 ## API Endpoints
 
@@ -112,7 +111,6 @@ Generate rules using query parameters.
 - `features` (optional): Comma-separated list of features (default: `auth`)
   - Available: `auth`, `database`, `storage`, `functions`, `messaging`, `sites`, `realtime`
   - Special: `all` - includes all available features
-- `mcp` (optional): Include MCP recommendations (`true` or `false`, default: `false`)
 - `format` (optional): Response format (`text` or `json`, default: `text`)
 
 **Example:**
@@ -138,8 +136,7 @@ curl "http://localhost:5173/api/rules?sdk=python&framework=flask&features=auth,s
   "sdk": "javascript",
   "framework": "nextjs",
   "features": ["auth", "database"],
-  "includeMCP": false,
-  "rules": "---\ndescription: You are an expert developer...\n---\n\n# Appwrite Development Rules\n..."
+  "rules": "# Appwrite Development Rules\n\n> You are an expert developer...\n\n## Overview\n..."
 }
 ```
 
@@ -181,7 +178,7 @@ appwrite-cursor-rules/
 │   │   ├── languages/          # SDK and framework-specific code examples
 │   │   │   ├── js/             # JavaScript/TypeScript frameworks
 │   │   │   ├── python/         # Python frameworks
-│   │   │   ├── common/         # Shared rules (products, MCP, etc.)
+│   │   │   ├── common/         # Shared rules (products, permissions, etc.)
 │   │   │   └── ...             # Other SDKs
 │   │   ├── rules-generator.js  # Main rules generation logic
 │   │   └── utils/              # Utility functions
@@ -212,14 +209,16 @@ appwrite-cursor-rules/
 2. Add the feature to the features array in `src/routes/+page.svelte`
 3. Include the feature in the `generateRules` function's Promise.all array
 
-## Generated Rules Format
+## Generated AGENTS.md Format
 
-The generated rules follow the Cursor `.mdc` format and include:
+The generated AGENTS.md file follows the [AGENTS.md standard](https://agents.md/) and includes:
 
-- **Frontmatter**: Metadata about the rules (description, alwaysApply flag)
+- **Title and Description**: Project context and overview for AI coding assistants
 - **SDK Initialization**: Framework-specific code examples for setting up Appwrite
 - **Feature Sections**: Best practices and guidance for selected features
 - **Multi-Tenancy Guide**: Comprehensive guide on using teams and permissions
 - **Product Links**: Links to official Appwrite documentation
+
+The AGENTS.md format is compatible with multiple AI coding assistants including Cursor, GitHub Copilot, OpenAI Codex, and others.
 
 

@@ -15,8 +15,7 @@
 		{ id: 'functions', label: 'Functions' },
 		{ id: 'messaging', label: 'Messaging' },
 		{ id: 'sites', label: 'Sites' },
-		{ id: 'realtime', label: 'Realtime' },
-		{ id: 'mcp', label: 'MCP' }
+		{ id: 'realtime', label: 'Realtime' }
 	];
 	
 	function updateFrameworks() {
@@ -40,7 +39,7 @@
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = `APPWRITE-${selectedSDK}-${selectedFramework}.mdc`;
+		a.download = 'AGENTS.md';
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
@@ -130,7 +129,7 @@
 							{copyButtonText}
 						</button>
 						<button class="button is-secondary" on:click={downloadRules}>
-							Download .mdc
+							Download AGENTS.md
 						</button>
 					</div>
 				</div>

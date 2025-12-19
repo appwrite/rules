@@ -1,20 +1,83 @@
 import { nodeAppwriteInstall } from '../common/install.js';
-import { createFrameworkTemplate } from '../common/utils.js';
 import { ssrAuthPattern } from '../common/security.js';
+import { getFullImplementationGuide } from '../common/implementation-patterns.js';
 
-export const astro = createFrameworkTemplate({
-	installation: nodeAppwriteInstall,
-	securityNotes: `**Best Practices:**
-- Store endpoint and project ID in \`.env\` file
-- Never commit API keys to version control
-- Use Astro API routes for SSR authentication
-- API keys should NEVER be exposed to client-side code
-- Use node-appwrite for server-side operations
+export async function astro(features = []) {
+	const astroImplementation = getFullImplementationGuide('astro', 'javascript', features);
 
-**Rendering Strategy:**
-- Default to static/server-side rendering for all pages
-- Only add client-side interactivity with client:* directives when needed
-- Leverage Astro API routes for server-side operations`,
-	additionalNotes: ssrAuthPattern
-});
+	return `${nodeAppwriteInstall}
+
+**Framework Documentation:**
+- [Astro Server Endpoints](https://docs.astro.build/en/guides/endpoints/)
+- [Astro Middleware](https://docs.astro.build/en/guides/middleware/)
+- [Appwrite Quick Start](https://appwrite.io/docs/quick-starts/astro)
+
+${ssrAuthPattern}
+
+${astroImplementation}
+
+## Astro-Specific Best Practices
+
+### File Organization
+\`\`\`
+src/
+├── lib/
+│   ├── db.ts              # Database wrapper (server-only)
+│   ├── storage.ts         # Storage wrapper (server-only)
+│   └── auth.ts            # Auth helpers
+├── pages/
+│   ├── api/
+│   │   ├── items/
+│   │   │   ├── index.ts   # GET/POST /api/items
+│   │   │   └── [id].ts    # GET/PUT/DELETE /api/items/:id
+│   │   └── auth/
+│   │       └── session.ts
+│   └── items.astro        # Server-rendered page
+├── components/
+│   └── ItemsList.tsx      # Interactive component
+└── middleware.ts          # Auth middleware
+\`\`\`
+
+### Middleware Pattern
+\`\`\`typescript
+// src/middleware.ts
+import { defineMiddleware } from 'astro:middleware'
+import { getSession } from '@/lib/auth'
+
+export const onRequest = defineMiddleware(async (context, next) => {
+  const session = await getSession(context.request)
+  context.locals.user = session?.user ?? null
+  return next()
+})
+\`\`\`
+
+### Hybrid Rendering
+\`\`\`astro
+---
+// Force server rendering for this page
+export const prerender = false
+
+import { db } from '@/lib/db'
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/login')
+
+const items = await db.items.listByOwner(user.id)
+---
+
+<Layout>
+  <!-- Static content rendered on server -->
+  <h1>Your Items</h1>
+  
+  <!-- Interactive component hydrated on client -->
+  <ItemsList items={items} client:load />
+</Layout>
+\`\`\`
+
+### Client Directive Guidelines
+- \`client:load\` - Hydrate immediately (for critical interactivity)
+- \`client:idle\` - Hydrate when browser is idle
+- \`client:visible\` - Hydrate when component enters viewport
+- Never use Appwrite SDK in client components
+`;
+}
 

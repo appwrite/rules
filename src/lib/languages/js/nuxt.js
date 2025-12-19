@@ -1,19 +1,85 @@
 import { nodeAppwriteInstall } from '../common/install.js';
-import { createFrameworkTemplate } from '../common/utils.js';
 import { ssrAuthPattern } from '../common/security.js';
+import { getFullImplementationGuide } from '../common/implementation-patterns.js';
 
-export const nuxt = createFrameworkTemplate({
-	installation: nodeAppwriteInstall,
-	securityNotes: `**Best Practices:**
-- Store endpoint and project ID in \`nuxt.config.ts\`
-- Never commit API keys to version control
-- Use Nuxt server routes for SSR authentication
-- API keys should NEVER be exposed to client-side code
+export async function nuxt(features = []) {
+	const nuxtImplementation = getFullImplementationGuide('nuxt', 'javascript', features);
 
-**Rendering Strategy:**
-- Default to server-side rendering (SSR) for all pages
-- Only use client-side rendering when explicitly needed
-- Leverage server API routes and middleware for data operations`,
-	additionalNotes: ssrAuthPattern
-});
+	return `${nodeAppwriteInstall}
+
+**Framework Documentation:**
+- [Nuxt Server Routes](https://nuxt.com/docs/guide/directory-structure/server)
+- [Nuxt Middleware](https://nuxt.com/docs/guide/directory-structure/middleware)
+- [Appwrite Quick Start](https://appwrite.io/docs/quick-starts/nuxt)
+
+${ssrAuthPattern}
+
+${nuxtImplementation}
+
+## Nuxt-Specific Best Practices
+
+### Server Route Organization
+\`\`\`
+server/
+├── api/
+│   ├── items/
+│   │   ├── index.get.ts    # GET /api/items
+│   │   ├── index.post.ts   # POST /api/items
+│   │   └── [id].delete.ts  # DELETE /api/items/:id
+│   └── auth/
+│       └── session.get.ts
+├── lib/
+│   ├── db.ts              # Database wrapper
+│   └── storage.ts         # Storage wrapper
+└── middleware/
+    └── auth.ts            # Auth middleware
+\`\`\`
+
+### Auth Middleware Pattern
+\`\`\`typescript
+// server/middleware/auth.ts
+export default defineEventHandler(async (event) => {
+  // Skip auth for public routes
+  if (event.path.startsWith('/api/public')) return
+
+  const session = await getSession(event)
+  event.context.user = session?.user ?? null
+})
+\`\`\`
+
+### Composables for Client
+\`\`\`typescript
+// composables/useItems.ts
+export function useItems() {
+  const { data: items, refresh } = useFetch('/api/items')
+  
+  async function createItem(title: string) {
+    await $fetch('/api/items', {
+      method: 'POST',
+      body: { title }
+    })
+    await refresh()
+  }
+  
+  return { items, createItem, refresh }
+}
+\`\`\`
+
+### Environment Configuration
+\`\`\`typescript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  runtimeConfig: {
+    // Server-only (never exposed to client)
+    appwriteApiKey: process.env.APPWRITE_API_KEY,
+    // Can be overridden by NUXT_PUBLIC_* env vars
+    public: {
+      appwriteEndpoint: process.env.APPWRITE_ENDPOINT,
+      appwriteProjectId: process.env.APPWRITE_PROJECT_ID,
+    }
+  }
+})
+\`\`\`
+`;
+}
 

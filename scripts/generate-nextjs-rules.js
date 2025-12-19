@@ -13,11 +13,10 @@ async function generateNextJSRules() {
 		const rules = await generateRules({
 			sdk: 'javascript',
 			framework: 'nextjs',
-			features: ['auth', 'database', 'storage', 'functions', 'messaging', 'sites', 'realtime'],
-			includeMCP: true
+			features: ['auth', 'database', 'storage', 'functions', 'messaging', 'sites', 'realtime']
 		});
 		
-		const outputPath = join(__dirname, '..', 'APPWRITE-javascript-nextjs.mdc');
+		const outputPath = join(__dirname, '..', 'AGENTS.md');
 		await writeFile(outputPath, rules, 'utf-8');
 		
 		console.log(`Rules generated successfully!`);

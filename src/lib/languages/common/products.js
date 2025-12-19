@@ -6,103 +6,108 @@
 /**
  * Authentication product documentation
  */
-export const authProductLinks = `For detailed authentication and session management instructions, see the [Authentication Quick Start Guide](https://appwrite.io/docs/products/auth/quick-start).
+export const authProductLinks = `**Authentication Documentation:**
 
-For OAuth providers and social authentication, see the [OAuth2 Documentation](https://appwrite.io/docs/products/auth/oauth2).
+- [Authentication Quick Start](https://appwrite.io/docs/products/auth/quick-start) - Getting started with authentication
+- [Email & Password](https://appwrite.io/docs/products/auth/email-password) - Email/password authentication
+- [OAuth2 Providers](https://appwrite.io/docs/products/auth/oauth2) - Social authentication (Google, GitHub, etc.)
+- [Magic URL](https://appwrite.io/docs/products/auth/magic-url) - Passwordless authentication via email
+- [Phone (SMS)](https://appwrite.io/docs/products/auth/phone-sms) - Phone number authentication
+- [Anonymous Sessions](https://appwrite.io/docs/products/auth/anonymous) - Guest/anonymous users
+- [JWT Tokens](https://appwrite.io/docs/products/auth/jwt) - JSON Web Token authentication
+- [MFA/2FA](https://appwrite.io/docs/products/auth/mfa) - Multi-factor authentication
+- [SSR Authentication](https://appwrite.io/docs/products/auth/server-side-rendering) - Server-side rendering auth patterns
+- [Teams](https://appwrite.io/docs/products/auth/teams) - Team management and team-based permissions
+- [Team Invites](https://appwrite.io/docs/products/auth/team-invites) - Inviting members to teams
+- [Multi-tenancy](https://appwrite.io/docs/products/auth/multi-tenancy) - Building multi-tenant applications with teams`;
 
-For Teams management, team invitations, and team-based permissions, see the [Teams Documentation](https://appwrite.io/docs/products/auth/teams).
+/**
+ * Permissions product documentation
+ */
+export const permissionsProductLinks = `**Permissions Documentation:**
 
-For team invites and membership management, see the [Team Invites Guide](https://appwrite.io/docs/products/auth/team-invites).
-
-For multi-tenancy using Teams, see the [Multi-tenancy Guide](https://appwrite.io/docs/products/auth/multi-tenancy).`;
+- [Permissions Overview](https://appwrite.io/docs/advanced/platform/permissions) - Understanding Appwrite's permission system
+- [Role Types](https://appwrite.io/docs/advanced/platform/permissions#role-types) - Available permission roles (any, users, guests, team, member, label)
+- [Permission Types](https://appwrite.io/docs/advanced/platform/permissions#permission-types) - Read, create, update, delete permissions
+- [Teams](https://appwrite.io/docs/products/auth/teams) - Team-based access control
+- [Multi-tenancy](https://appwrite.io/docs/products/auth/multi-tenancy) - Tenant isolation patterns`;
 
 /**
  * Database product documentation
  */
-export const databaseProductLinks = `For detailed database operations, see the [Rows Documentation](https://appwrite.io/docs/products/databases/rows).
+export const databaseProductLinks = `**Database Documentation:**
 
-For querying and filtering data, see the [Queries Guide](https://appwrite.io/docs/products/databases/queries).
-
-For pagination, see the [Pagination Documentation](https://appwrite.io/docs/products/databases/pagination).
-
-For permissions and access control, see the [Permissions Guide](https://appwrite.io/docs/products/databases/permissions).
-
-For transactions, see the [Transactions Documentation](https://appwrite.io/docs/products/databases/transactions).`;
+- [Database Quick Start](https://appwrite.io/docs/products/databases/quick-start) - Getting started with TablesDB
+- [Tables](https://appwrite.io/docs/products/databases/tables) - Creating and managing tables
+- [Rows](https://appwrite.io/docs/products/databases/rows) - CRUD operations on rows
+- [Queries](https://appwrite.io/docs/products/databases/queries) - Filtering, sorting, and querying data
+- [Pagination](https://appwrite.io/docs/products/databases/pagination) - Paginating large datasets
+- [Relationships](https://appwrite.io/docs/products/databases/relationships) - One-to-one, one-to-many, many-to-many relationships
+- [Permissions](https://appwrite.io/docs/products/databases/permissions) - Row and table-level permissions
+- [Transactions](https://appwrite.io/docs/products/databases/transactions) - Atomic operations`;
 
 /**
  * Storage product documentation
  */
-export const storageProductLinks = `For detailed storage operations, see the [Storage Documentation](https://appwrite.io/docs/products/storage/upload-download).
+export const storageProductLinks = `**Storage Documentation:**
 
-For file uploads and downloads, see the [Upload & Download Guide](https://appwrite.io/docs/products/storage/upload-download).
-
-For permissions and access control, see the [Storage Permissions Documentation](https://appwrite.io/docs/products/storage/permissions).`;
+- [Storage Quick Start](https://appwrite.io/docs/products/storage/quick-start) - Getting started with storage
+- [Buckets](https://appwrite.io/docs/products/storage/buckets) - Creating and managing storage buckets
+- [Upload & Download](https://appwrite.io/docs/products/storage/upload-download) - File upload and download operations
+- [Permissions](https://appwrite.io/docs/products/storage/permissions) - Bucket and file-level permissions
+- [Images](https://appwrite.io/docs/products/storage/images) - Image manipulation and transformations`;
 
 /**
  * Functions product documentation
  */
-export const functionsProductLinks = `For detailed serverless function execution, see the [Functions Execution Documentation](https://appwrite.io/docs/products/functions/execute).
+export const functionsProductLinks = `**Functions Documentation:**
 
-For function domains and custom endpoints, see the [Functions Domains Guide](https://appwrite.io/docs/products/functions/domains).
-
-For event-driven function execution, see the [Events Documentation](https://appwrite.io/docs/advanced/platform/events).
-
-For scheduled function execution, see the [Scheduled Executions Guide](https://appwrite.io/docs/products/functions/execute#schedule).`;
+- [Functions Quick Start](https://appwrite.io/docs/products/functions/quick-start) - Getting started with serverless functions
+- [Develop Functions](https://appwrite.io/docs/products/functions/develop) - Writing and developing functions
+- [Execute Functions](https://appwrite.io/docs/products/functions/execute) - Triggering function executions
+- [Deployments](https://appwrite.io/docs/products/functions/deployments) - Deploying function code
+- [Domains](https://appwrite.io/docs/products/functions/domains) - Custom domains for functions
+- [Events](https://appwrite.io/docs/advanced/platform/events) - Event-driven function execution
+- [Scheduled Executions](https://appwrite.io/docs/products/functions/execute#schedule) - Cron-based scheduling`;
 
 /**
  * Messaging product documentation
  */
-export const messagingProductLinks = `For detailed messaging operations, see the [Messaging Documentation](https://appwrite.io/docs/products/messaging).
+export const messagingProductLinks = `**Messaging Documentation:**
 
-For sending push notifications, see the [Push Notifications Guide](https://appwrite.io/docs/products/messaging/send-push-notifications).
-
-For sending emails, see the [Email Messages Guide](https://appwrite.io/docs/products/messaging/send-email-messages).
-
-For sending SMS messages, see the [SMS Messages Guide](https://appwrite.io/docs/products/messaging/send-sms-messages).
-
-For messaging providers, see the [Providers Documentation](https://appwrite.io/docs/products/messaging/providers).`;
+- [Messaging Overview](https://appwrite.io/docs/products/messaging) - Getting started with messaging
+- [Push Notifications](https://appwrite.io/docs/products/messaging/send-push-notifications) - Sending push notifications
+- [Email Messages](https://appwrite.io/docs/products/messaging/send-email-messages) - Sending emails
+- [SMS Messages](https://appwrite.io/docs/products/messaging/send-sms-messages) - Sending SMS
+- [Topics](https://appwrite.io/docs/products/messaging/topics) - Managing message topics
+- [Targets](https://appwrite.io/docs/products/messaging/targets) - Managing message targets
+- [Providers](https://appwrite.io/docs/products/messaging/providers) - Configuring messaging providers`;
 
 /**
  * Sites product documentation
  */
-export const sitesProductLinks = `For detailed Sites hosting and deployment, see the [Sites Documentation](https://appwrite.io/docs/products/sites).
+export const sitesProductLinks = `**Sites Documentation:**
 
-For getting started with Sites, see the [Sites Quick Start Guide](https://appwrite.io/docs/products/sites/quick-start).
-
-For deploying from Git, see the [Deploy from Git Guide](https://appwrite.io/docs/products/sites/deploy-from-git).
-
-For deploying from CLI, see the [Deploy from CLI Guide](https://appwrite.io/docs/products/sites/deploy-from-cli).
-
-For manual deployments, see the [Manual Deployment Guide](https://appwrite.io/docs/products/sites/deploy-manually).
-
-For deployment management, see the [Deployments Documentation](https://appwrite.io/docs/products/sites/deployments).
-
-For custom domains, see the [Domains Documentation](https://appwrite.io/docs/products/sites/domains).
-
-For rendering strategies (static vs SSR), see the [Rendering Documentation](https://appwrite.io/docs/products/sites/rendering).
-
-For static site hosting, see the [Static Rendering Guide](https://appwrite.io/docs/products/sites/rendering/static).
-
-For server-side rendering, see the [SSR Rendering Guide](https://appwrite.io/docs/products/sites/rendering/ssr).
-
-For supported frameworks, see the [Frameworks Documentation](https://appwrite.io/docs/products/sites/frameworks).
-
-For instant rollbacks, see the [Instant Rollbacks Guide](https://appwrite.io/docs/products/sites/instant-rollbacks).
-
-For deployment previews, see the [Previews Documentation](https://appwrite.io/docs/products/sites/previews).`;
+- [Sites Quick Start](https://appwrite.io/docs/products/sites/quick-start) - Getting started with Sites
+- [Deploy from Git](https://appwrite.io/docs/products/sites/deploy-from-git) - Git-based deployments
+- [Deploy from CLI](https://appwrite.io/docs/products/sites/deploy-from-cli) - CLI deployments
+- [Deploy Manually](https://appwrite.io/docs/products/sites/deploy-manually) - Manual file uploads
+- [Deployments](https://appwrite.io/docs/products/sites/deployments) - Managing deployments
+- [Domains](https://appwrite.io/docs/products/sites/domains) - Custom domain configuration
+- [Rendering](https://appwrite.io/docs/products/sites/rendering) - Static vs SSR rendering
+- [Frameworks](https://appwrite.io/docs/products/sites/frameworks) - Supported frameworks
+- [Rollbacks](https://appwrite.io/docs/products/sites/instant-rollbacks) - Instant rollbacks
+- [Previews](https://appwrite.io/docs/products/sites/previews) - Deployment previews`;
 
 /**
  * Realtime product documentation
  */
-export const realtimeProductLinks = `For detailed  subscriptions, see the [Realtime Documentation](https://appwrite.io/docs/products/realtime).
+export const realtimeProductLinks = `**Realtime Documentation:**
 
-For subscribing to database changes, see the [Database Subscriptions Guide](https://appwrite.io/docs/products/realtime/subscribe-to-databases).
-
-For subscribing to storage changes, see the [Storage Subscriptions Guide](https://appwrite.io/docs/products/realtime/subscribe-to-storage).
-
-For subscribing to account changes, see the [Account Subscriptions Guide](https://appwrite.io/docs/products/realtime/subscribe-to-account).
-
-For realtime channels and events, see the [Channels Documentation](https://appwrite.io/docs/products/realtime/channels).
-
-For realtime event types and payloads, see the [Events Documentation](https://appwrite.io/docs/products/realtime/events).`;
+- [Realtime Overview](https://appwrite.io/docs/products/realtime) - Getting started with realtime
+- [Database Subscriptions](https://appwrite.io/docs/products/realtime/subscribe-to-databases) - Subscribe to database changes
+- [Storage Subscriptions](https://appwrite.io/docs/products/realtime/subscribe-to-storage) - Subscribe to storage changes
+- [Account Subscriptions](https://appwrite.io/docs/products/realtime/subscribe-to-account) - Subscribe to account changes
+- [Channels](https://appwrite.io/docs/products/realtime/channels) - Available subscription channels
+- [Events](https://appwrite.io/docs/products/realtime/events) - Event types and payloads`;
 

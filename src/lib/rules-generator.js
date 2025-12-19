@@ -1,6 +1,5 @@
 // Rules generator for different Appwrite SDKs and frameworks
 import * as codeExamples from './languages/index.js';
-import { generateMCPRecommendation } from './languages/common/mcp.js';
 
 /** @typedef {Object} SDKConfig
  * @property {string} name
@@ -14,7 +13,6 @@ import { generateMCPRecommendation } from './languages/common/mcp.js';
  * @property {string} sdk
  * @property {string} framework
  * @property {string[]} features
- * @property {boolean} [includeMCP] - Whether to include MCP recommendation section
  */
 
 /** @type {Record<string, SDKConfig>} */
@@ -110,10 +108,10 @@ export const SDK_OPTIONS = {
  * @returns {Promise<string>}
  */
 export async function generateRules(config) {
-	const { sdk, framework, features, includeMCP = false } = config;
+	const { sdk, framework, features } = config;
 	const sdkInfo = SDK_OPTIONS[sdk];
 	
-	const sdkInit = await generateSDKInitialization(sdk, framework);
+	const sdkInit = await generateSDKInitialization(sdk, framework, features);
 	
 	// Generate all sections in parallel
 	// Permissions section is mandatory for all products
@@ -128,16 +126,15 @@ export async function generateRules(config) {
 		features.includes('realtime') ? generateRealtimeSection() : Promise.resolve('')
 	]);
 	
-	const mcpSection = includeMCP ? `${generateMCPRecommendation()}\n\n` : '';
-	
-	let rules = `---
-description: You are an expert developer focused on building apps with Appwrite's ${sdkInfo?.name || sdk} SDK.
-alwaysApply: false
----
+	let rules = `# Appwrite Development Rules
 
-# Appwrite Development Rules
+> You are an expert developer focused on building apps with Appwrite's ${sdkInfo?.name || sdk} SDK.
 
-${mcpSection}${sdkInit}
+## Overview
+
+This file provides AI coding assistants with Appwrite-specific development instructions, best practices, and code patterns for the ${sdkInfo?.name || sdk} SDK${framework !== 'vanilla' ? ` with ${framework}` : ''}.
+
+${sdkInit}
 ${sections.join('\n\n')}
 `;
 
@@ -148,10 +145,11 @@ ${sections.join('\n\n')}
 /**
  * @param {string} sdk
  * @param {string} framework
+ * @param {string[]} features
  * @returns {Promise<string>}
  */
-async function generateSDKInitialization(sdk, framework) {
-	/** @type {Record<string, Record<string, string | (() => Promise<string>)>>} */
+async function generateSDKInitialization(sdk, framework, features) {
+	/** @type {Record<string, Record<string, string | ((features?: string[]) => Promise<string>)>>} */
 	const templates = {
 		javascript: codeExamples.js,
 		'react-native': codeExamples.reactNative,
@@ -172,7 +170,7 @@ async function generateSDKInitialization(sdk, framework) {
 		const template = sdkTemplates[framework];
 		// Check if it's an async function
 		if (typeof template === 'function') {
-			return await template();
+			return await template(features);
 		}
 		return template;
 	}
@@ -182,7 +180,7 @@ async function generateSDKInitialization(sdk, framework) {
 		const template = sdkTemplates.vanilla;
 		// Check if it's an async function
 		if (typeof template === 'function') {
-			return await template();
+			return await template(features);
 		}
 		return template;
 	}
@@ -229,7 +227,7 @@ When building applications that involve multiple users or tenants:
  * @returns {Promise<string>}
  */
 async function generatePermissionsSection(sdk) {
-	const { authProductLinks } = await import('./languages/common/products.js');
+	const { authProductLinks, permissionsProductLinks } = await import('./languages/common/products.js');
 	const { getPermissionExamples } = await import('./languages/common/permissions-examples.js');
 	const examples = getPermissionExamples(sdk);
 	
@@ -237,11 +235,13 @@ async function generatePermissionsSection(sdk) {
 
 This section is CRITICAL for building secure, scalable applications with Appwrite. Multi-tenancy is one of the most important architectural patterns in modern applications, and Appwrite's team-based permission system is designed specifically for this.
 
+${permissionsProductLinks}
+
 ### Why Multi-Tenancy Matters
 
 Multi-tenancy allows a single application instance to serve multiple isolated groups of users (tenants) while maintaining complete data isolation and security. Almost every modern SaaS application requires multi-tenancy to scale efficiently.
 
-### Team/Member Roles vs User-Specific Roles: The Critical Distinction
+### The Critical Pattern: Team-Based Permissions
 
 **ALWAYS PREFER TEAM/MEMBER-BASED ROLES over user-specific roles.** This is a fundamental architectural decision:
 
@@ -255,7 +255,6 @@ ${examples.avoidUserPermissions}
 - Difficult to add/remove access without updating every row
 - No way to represent organizational hierarchies
 - Poor support for collaborative features
-- Maintenance nightmare as teams grow
 
 #### Prefer: Team/Member-Based Roles
 \`\`\`${getLanguageFromSdk(sdk)}
@@ -267,202 +266,79 @@ ${examples.preferTeamPermissions}
 - Easy to add/remove members without touching rows
 - Scales naturally as teams grow
 - Supports organizational hierarchies and complex permissions
-- Industry-standard pattern for SaaS applications
 
-### Building Multi-Tenant Applications from Scratch
+### Query Isolation Pattern
+
+**CRITICAL**: Always filter queries by \`teamId\` to ensure tenant isolation:
+
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.queryWithTeamId}
+\`\`\`
+
+### Role Verification Pattern
+
+Before allowing sensitive operations, always verify the user's role:
+
+\`\`\`${getLanguageFromSdk(sdk)}
+${examples.roleCheck}
+\`\`\`
+
+### Multi-Tenancy Implementation Guide
 
 #### Step 1: Create Teams Structure
 
-Teams in Appwrite represent tenants. Each team should map to a business entity (company, organization, workspace, etc.).
+Teams in Appwrite represent tenants. Each team should map to a business entity (company, organization, workspace).
 
-**Creating a team:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createTeam}
-\`\`\`
+See: [Teams Documentation](https://appwrite.io/docs/products/auth/teams)
 
 #### Step 2: Define Custom Roles
 
-Create roles that match your application's permission model. Common roles:
+Common role hierarchy:
 - **owner**: Full control, can manage team settings and members
-- **admin**: Can manage resources and most settings, but not team membership
-- **member**: Can create/edit resources, but with limited permissions
+- **admin**: Can manage resources and most settings
+- **member**: Can create/edit resources with limited permissions
 - **viewer**: Read-only access
 
-**Creating custom roles (Server-side only):**
-\`\`\`${getLanguageFromSdk(sdk)}
-// Define roles when creating the team (optional, defaults exist)
-// Or create via Appwrite Console or Server SDK
-// Roles are created per team, allowing different permission models per tenant
-\`\`\`
+#### Step 3: Member Management
 
-#### Step 3: Member Management from Scratch
+For team invitations and membership management, see:
+- [Team Invites Guide](https://appwrite.io/docs/products/auth/team-invites)
+- [Teams API Reference](https://appwrite.io/docs/references)
 
-Member management is the foundation of multi-tenant applications. Here's how to build it:
+#### Step 4: Apply Permissions Consistently
 
-**A. Invite Members to Teams**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createMembershipEmail}
-\`\`\`
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createMembershipUserId}
-\`\`\`
-
-**B. List Team Members**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.listMemberships}
-\`\`\`
-
-**C. Update Member Roles**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.updateMembership}
-\`\`\`
-
-**D. Remove Members**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.deleteMembership}
-\`\`\`
-
-**E. Get Current User's Teams**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.listTeams}
-\`\`\`
-
-**F. Get Current User's Role in a Team**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.getUserRole}
-\`\`\`
-
-#### Step 4: Apply Permissions in Tables
-
-When creating rows in multi-tenant applications, always use team roles:
-
-**Database Tables:**
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createRow}
-\`\`\`
-
-**Table-Level Permissions:**
-
-When creating tables, set default permissions:
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createTable}
-\`\`\`
-
-#### Step 5: Query with Team Isolation
-
-Always filter queries by teamId to ensure data isolation:
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.listRows}
-\`\`\`
-
-#### Step 6: Storage Permissions
-
-Apply the same team-based permission pattern to storage:
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.createFile}
-\`\`\`
-
-### Complete Member Management Implementation Pattern
-
-Here's a complete pattern for building member management UI and logic:
-
-**1. Team Creation Flow:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.teamCreationFlow}
-\`\`\`
-
-**2. Invite Flow:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.inviteFlow}
-\`\`\`
-
-**3. Member List UI:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.memberListUI}
-\`\`\`
-
-**4. Role Change:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.roleChange}
-\`\`\`
-
-**5. Member Removal:**
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.memberRemoval}
-\`\`\`
+Use team roles for all resources:
+- **Database rows**: Apply \`Role.team('<TEAM_ID>', 'role')\` permissions
+- **Storage files**: Same team-based permission pattern
+- **Always include \`teamId\`** as a field in your rows for query filtering
 
 ### Permission Best Practices
 
-1. **Always Store teamId**: Every row/resource in a multi-tenant app should have a \`teamId\` field for filtering and isolation
-
-2. **Default Deny**: Don't grant permissions unless explicitly needed. Use minimal permission sets.
-
-3. **Role Hierarchy**: Design your roles to reflect natural hierarchies (owner > admin > member > viewer)
-
-4. **Permission Consistency**: Use the same permission pattern across database, storage, and other resources
-
-5. **Server-Side Validation**: Always validate team membership on the server side, even if client has permissions
-
-6. **Query Isolation**: Always include \`teamId\` in queries to prevent cross-tenant data leaks
-
-7. **Role Checks**: Before allowing sensitive operations, check the user's role in the team:
-   \`\`\`${getLanguageFromSdk(sdk)}
-${examples.roleCheck}
-   \`\`\`
-
-8. **Permission Inheritance**: Consider if child resources should inherit parent team permissions
-
-9. **Row-Level Permissions**: For fine-grained control, set permissions on individual rows while still using team roles
-
-10. **Audit Trail**: Log permission changes and team membership changes for security auditing
+1. **Always Store teamId**: Every row in a multi-tenant app should have a \`teamId\` field
+2. **Default Deny**: Don't grant permissions unless explicitly needed
+3. **Role Hierarchy**: Design roles to reflect natural hierarchies (owner > admin > member > viewer)
+4. **Server-Side Validation**: Always validate team membership server-side
+5. **Query Isolation**: Every multi-tenant query MUST include a \`teamId\` filter
 
 ### Common Multi-Tenancy Patterns
 
-**Pattern 1: Workspace-Based (e.g., Notion, Slack)**
-- Each workspace is a team
-- Users can belong to multiple teams
-- Resources belong to one team
-- Perfect for: Collaboration tools, project management
-
-**Pattern 2: Organization-Based (e.g., GitHub, GitLab)**
-- Each organization is a team
-- Resources belong to organization
-- Members have roles within organization
-- Perfect for: Enterprise SaaS, developer tools
-
-**Pattern 3: Project-Based (e.g., Linear, Asana)**
-- Each project is a team
-- Resources scoped to project
-- Members invited per project
-- Perfect for: Project management, task tracking
+| Pattern | Example Apps | Structure |
+|---------|--------------|-----------|
+| Workspace-Based | Notion, Slack | Each workspace = 1 team, users can belong to multiple teams |
+| Organization-Based | GitHub, GitLab | Each org = 1 team, resources scoped to org |
+| Project-Based | Linear, Asana | Each project = 1 team, members invited per project |
 
 ### Debugging Permission Issues
 
-When permissions aren't working:
-
 1. **Check Team Membership**: Verify user is actually a member of the team
-2. **Verify Roles**: Ensure user has the required role (check \`membership.roles\`)
-3. **Check Permission Strings**: Verify permission strings match exactly (case-sensitive)
+2. **Verify Roles**: Check \`membership.roles\` contains the required role
+3. **Check Permission Strings**: Permission strings are case-sensitive
 4. **Query Filters**: Ensure \`teamId\` filters are applied correctly
-5. **Server vs Client**: Some operations require server SDK (like creating custom roles)
-6. **Session Context**: Permissions are evaluated in the context of the current session
+5. **Server vs Client**: Some operations require the Server SDK
 
 ### Additional Resources
 
-${authProductLinks}
-
-For comprehensive permission patterns and examples, always refer to the official Appwrite documentation on Teams, Multi-tenancy, and Permissions.`;
+${authProductLinks}`;
 }
 
 /**
@@ -498,9 +374,139 @@ async function generateDatabaseSection() {
 
 ${databaseProductLinks}
 
-### Best Practices for Databases
+### Database Setup Scripts
 
-- **SDK Usage**: Always use \`TablesDB\` instead of \`Databases\` in the SDKs
+**ALWAYS create a database setup script using the Server SDK and API key** to initialize your database schema. This script should be version-controlled and run during deployment or initial setup.
+
+**Why Use Setup Scripts:**
+- **Infrastructure as Code**: Database schema becomes part of your codebase, not manual console clicks
+- **Reproducibility**: Easy to recreate database structure across different environments (dev, staging, production)
+- **Version Control**: Track schema changes over time with Git
+- **Team Collaboration**: All developers can sync database structure automatically
+- **CI/CD Integration**: Automate database setup in deployment pipelines
+- **Documentation**: The script serves as living documentation of your database structure
+
+**What Your Setup Script Should Include:**
+
+1. **Table Creation**: All tables with proper naming and IDs
+2. **Column Definitions**: All columns with correct data types (string, integer, boolean, datetime, email, url, etc.)
+3. **Indexes**: Performance-critical indexes on frequently queried fields (especially \`teamId\`, foreign keys, search fields)
+4. **Relationships**: All table relationships and foreign key constraints
+5. **Default Permissions**: Table-level permissions using team roles
+6. **Column Constraints**: Required fields, string lengths, number ranges, enum values, default values
+
+**Setup Script Requirements:**
+
+- **Use Server SDK**: Must use the Server SDK (node-appwrite, appwrite/appwrite for PHP, etc.), NOT the client SDK
+- **Require API Key**: The script must use an API key with appropriate scopes (\`databases.write\`, \`tables.write\`, \`columns.write\`)
+- **Idempotent**: Script should safely handle re-runs (check if tables exist before creating)
+- **Environment Variables**: Store API key, endpoint, project ID, and database ID in environment variables
+- **Error Handling**: Proper error handling with clear error messages
+- **Logging**: Log progress and errors for debugging
+
+**Example Setup Script Structure:**
+
+\`\`\`${getLanguageFromSdk('javascript')}
+// scripts/setup-database.js (Node.js example)
+import { Client, TablesDB, Permission, Role } from 'node-appwrite';
+
+const client = new Client()
+    .setEndpoint(process.env.APPWRITE_ENDPOINT)
+    .setProject(process.env.APPWRITE_PROJECT_ID)
+    .setKey(process.env.APPWRITE_API_KEY);
+
+const tablesDB = new TablesDB(client);
+const databaseId = process.env.APPWRITE_DATABASE_ID;
+
+async function setupDatabase() {
+    try {
+        // Create Users table
+        await tablesDB.createTable(databaseId, 'users', 'Users', [
+            Permission.read(Role.users()),
+            Permission.write(Role.users())
+        ]);
+        
+        // Add columns to Users table
+        await tablesDB.createStringColumn(databaseId, 'users', 'name', 255, true);
+        await tablesDB.createEmailColumn(databaseId, 'users', 'email', true);
+        await tablesDB.createStringColumn(databaseId, 'users', 'teamId', 255, true);
+        
+        // Create index on teamId for query performance
+        await tablesDB.createIndex(databaseId, 'users', 'idx_team', 'key', ['teamId']);
+        
+        // Create Projects table with team-based permissions
+        await tablesDB.createTable(databaseId, 'projects', 'Projects', [
+            Permission.read(Role.team('[TEAM_ID]')),
+            Permission.create(Role.team('[TEAM_ID]', 'member')),
+            Permission.update(Role.team('[TEAM_ID]', 'admin')),
+            Permission.delete(Role.team('[TEAM_ID]', 'owner')),
+        ]);
+        
+        // Add columns to Projects table
+        await tablesDB.createStringColumn(databaseId, 'projects', 'name', 255, true);
+        await tablesDB.createStringColumn(databaseId, 'projects', 'description', 5000, false);
+        await tablesDB.createStringColumn(databaseId, 'projects', 'teamId', 255, true);
+        await tablesDB.createStringColumn(databaseId, 'projects', 'ownerId', 255, true);
+        await tablesDB.createDatetimeColumn(databaseId, 'projects', 'createdAt', true);
+        
+        // Create indexes
+        await tablesDB.createIndex(databaseId, 'projects', 'idx_team', 'key', ['teamId']);
+        await tablesDB.createIndex(databaseId, 'projects', 'idx_owner', 'key', ['ownerId']);
+        
+        // Create relationship between projects and users
+        await tablesDB.createRelationshipColumn(
+            databaseId, 
+            'projects', 
+            'users', 
+            'oneToMany',
+            false, // twoWay
+            'owner', // key in projects
+            'projects', // key in users
+            'cascade' // onDelete
+        );
+        
+        console.log('Database setup completed successfully!');
+    } catch (error) {
+        // Handle "already exists" errors gracefully for idempotency
+        if (error.code !== 409) {
+            console.error('Database setup failed:', error);
+            throw error;
+        } else {
+            console.log('Tables already exist, skipping creation');
+        }
+    }
+}
+
+setupDatabase();
+\`\`\`
+
+**Running the Setup Script:**
+
+\`\`\`bash
+# Set environment variables
+export APPWRITE_ENDPOINT="https://cloud.appwrite.io/v1"
+export APPWRITE_PROJECT_ID="your-project-id"
+export APPWRITE_API_KEY="your-api-key"
+export APPWRITE_DATABASE_ID="your-database-id"
+
+# Run the setup script
+node scripts/setup-database.js
+\`\`\`
+
+**Best Practices for Setup Scripts:**
+
+1. **Separate File**: Keep setup scripts in a \`scripts/\` directory
+2. **Documentation**: Add comments explaining each table's purpose and relationships
+3. **Testing**: Test the script on a separate development database before production
+4. **Migration Strategy**: For schema changes, create new migration scripts instead of modifying the original setup
+5. **Backup First**: Always backup production data before running schema changes
+6. **Team ID Fields**: Always include \`teamId\` fields in multi-tenant tables
+7. **Timestamp Fields**: Include \`createdAt\` and \`updatedAt\` fields for auditing
+8. **Foreign Keys**: Use relationship columns to enforce referential integrity
+
+### Best Practices for TablesDB
+
+- **SDK Usage**: Use the \`TablesDB\` service (formerly \`Databases\`) for all database operations
 - **Permissions & Multi-Tenancy**: ALWAYS use team/member-based roles for permissions (see Permissions & Multi-Tenancy section above). Never use user-specific permissions in multi-tenant applications
 - **Tenant Isolation**: Always include \`teamId\` fields in your rows and filter queries by \`teamId\` to ensure complete data isolation between tenants
 - **Permission Patterns**: Apply team roles (owner, admin, member, viewer) consistently across all tables. Use Role.team() for all permission checks

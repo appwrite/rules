@@ -24,7 +24,6 @@ export async function GET({ url }) {
 		const sdk = url.searchParams.get('sdk') || 'javascript';
 		const framework = url.searchParams.get('framework') || 'nextjs';
 		const featuresParam = url.searchParams.get('features');
-		const includeMCP = url.searchParams.get('mcp') === 'true';
 		const format = url.searchParams.get('format') || 'text'; // 'text' or 'json'
 
 		// Validate SDK
@@ -55,8 +54,7 @@ export async function GET({ url }) {
 		const rules = await generateRules({
 			sdk,
 			framework,
-			features,
-			includeMCP
+			features
 		});
 
 		// Return based on format
@@ -65,7 +63,6 @@ export async function GET({ url }) {
 				sdk,
 				framework,
 				features,
-				includeMCP,
 				rules
 			});
 		}
@@ -73,7 +70,7 @@ export async function GET({ url }) {
 		return text(rules, {
 			headers: {
 				'Content-Type': 'text/markdown; charset=utf-8',
-				'Content-Disposition': `attachment; filename="APPWRITE-${sdk}-${framework}.mdc"`
+				'Content-Disposition': 'attachment; filename="AGENTS.md"'
 			}
 		});
 	} catch (error) {
