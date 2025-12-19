@@ -25,10 +25,3 @@ vite.config.ts.timestamp-*
 # Rules
 
 AGENTS.md
-
-# Generated Files
-
-API_FIX_SUMMARY_V2.md
-API_FIX_SUMMARY.md
-API_REFERENCES_FINAL.md
-API_REFERENCES_VERIFICATION.md

@@ -17,17 +17,31 @@ export function createSecuritySection({
 }
 
 /**
+ * Client-side API references for JavaScript frameworks
+ */
+const clientAPIReferences = `
+**API References:**
+- [Account API](https://appwrite.io/docs/references/cloud/client-web/account) - Authentication and user management
+- [Databases API](https://appwrite.io/docs/references/cloud/client-web/databases) - Database operations and queries
+- [Storage API](https://appwrite.io/docs/references/cloud/client-web/storage) - File upload, download, and management
+- [Functions API](https://appwrite.io/docs/references/cloud/client-web/functions) - Serverless functions execution
+- [Messaging API](https://appwrite.io/docs/references/cloud/client-web/messaging) - Push notifications and messaging
+`;
+
+/**
  * Creates a complete framework template by combining installation and security notes
  * @param {Object} options
  * @param {string} options.installation - Installation section
  * @param {string} options.securityNotes - Security/best practices section
  * @param {string} [options.additionalNotes] - Additional framework-specific notes
+ * @param {boolean} [options.includeAPIReferences=true] - Whether to include API references
  * @returns {string}
  */
-export function createFrameworkTemplate({ installation, securityNotes, additionalNotes = '' }) {
+export function createFrameworkTemplate({ installation, securityNotes, additionalNotes = '', includeAPIReferences = true }) {
 	const securitySection = createSecuritySection({ securityNotes, additionalNotes });
+	const apiSection = includeAPIReferences ? clientAPIReferences : '';
 	return `${installation}
-
+${apiSection}
 ${securitySection}`;
 }
 

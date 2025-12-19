@@ -4,6 +4,7 @@ import { getFullImplementationGuide } from '../common/implementation-patterns.js
 
 export async function nuxt(features = []) {
 	const nuxtImplementation = getFullImplementationGuide('nuxt', 'javascript', features);
+	const authSection = features.includes('auth') ? `\n${ssrAuthPattern}\n` : '';
 
 	return `${nodeAppwriteInstall}
 
@@ -12,8 +13,14 @@ export async function nuxt(features = []) {
 - [Nuxt Middleware](https://nuxt.com/docs/guide/directory-structure/middleware)
 - [Appwrite Quick Start](https://appwrite.io/docs/quick-starts/nuxt)
 
-${ssrAuthPattern}
-
+**API References:**
+- [Users API](https://appwrite.io/docs/references/cloud/server-nodejs/users) - User management and administration
+- [Account API](https://appwrite.io/docs/references/cloud/server-nodejs/account) - Session management and account operations
+- [Databases API](https://appwrite.io/docs/references/cloud/server-nodejs/databases) - Database operations and queries
+- [Storage API](https://appwrite.io/docs/references/cloud/server-nodejs/storage) - File upload, download, and management
+- [Functions API](https://appwrite.io/docs/references/cloud/server-nodejs/functions) - Serverless functions management
+- [Messaging API](https://appwrite.io/docs/references/cloud/server-nodejs/messaging) - Email, SMS, and push notifications
+${authSection}
 ${nuxtImplementation}
 
 ## Nuxt-Specific Best Practices

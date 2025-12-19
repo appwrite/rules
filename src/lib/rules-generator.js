@@ -301,9 +301,7 @@ Common role hierarchy:
 
 #### Step 3: Member Management
 
-For team invitations and membership management, see:
-- [Team Invites Guide](https://appwrite.io/docs/products/auth/team-invites)
-- [Teams API Reference](https://appwrite.io/docs/references)
+For team invitations and membership management, see [Team Invites Guide](https://appwrite.io/docs/products/auth/team-invites)
 
 #### Step 4: Apply Permissions Consistently
 

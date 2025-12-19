@@ -4,6 +4,7 @@ import { getFullImplementationGuide } from '../common/implementation-patterns.js
 
 export async function nextjs(features = []) {
 	const nextjsImplementation = getFullImplementationGuide('nextjs', 'javascript', features);
+	const authSection = features.includes('auth') ? `\n${ssrAuthPattern}\n` : '';
 
 	return `${nodeAppwriteInstall}
 
@@ -12,8 +13,14 @@ export async function nextjs(features = []) {
 - [Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
 - [Appwrite Quick Start](https://appwrite.io/docs/quick-starts/nextjs)
 
-${ssrAuthPattern}
-
+**API References:**
+- [Users API](https://appwrite.io/docs/references/cloud/server-nodejs/users) - User management and administration
+- [Account API](https://appwrite.io/docs/references/cloud/server-nodejs/account) - Session management and account operations
+- [Databases API](https://appwrite.io/docs/references/cloud/server-nodejs/databases) - Database operations and queries
+- [Storage API](https://appwrite.io/docs/references/cloud/server-nodejs/storage) - File upload, download, and management
+- [Functions API](https://appwrite.io/docs/references/cloud/server-nodejs/functions) - Serverless functions management
+- [Messaging API](https://appwrite.io/docs/references/cloud/server-nodejs/messaging) - Email, SMS, and push notifications
+${authSection}
 ${nextjsImplementation}
 
 ## Next.js-Specific Best Practices
