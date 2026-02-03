@@ -33,6 +33,8 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
-		"@appwrite.io/pink": "^1.0.0"
+		"@appwrite.io/pink": "^1.0.0",
+		"@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@dd7e01c",
+		"@appwrite.io/pink-legacy": "^1.0.3"
 	}
 }

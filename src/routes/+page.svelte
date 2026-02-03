@@ -1,13 +1,23 @@
 <script>
 	import { SDK_OPTIONS, generateRules } from '$lib/rules-generator';
-	
+	import {
+		Input,
+		Selector,
+		Button,
+		Typography,
+		Card,
+		Layout,
+		Code,
+		Empty
+	} from '@appwrite.io/pink-svelte';
+	import appwriteLogo from '$lib/assets/appwrite.svg';
+
 	let selectedSDK = 'javascript';
 	let selectedFramework = 'nextjs';
-	let selectedFeatures = ['auth'];
 	let generatedRules = '';
 	let previewVisible = false;
 	let copyButtonText = 'Copy';
-	
+
 	const features = [
 		{ id: 'auth', label: 'Auth' },
 		{ id: 'database', label: 'Database' },
@@ -17,14 +27,28 @@
 		{ id: 'sites', label: 'Sites' },
 		{ id: 'realtime', label: 'Realtime' }
 	];
-	
+
+	/** @type {Record<string, boolean>} */
+	let featureChecked = { auth: true, database: false, storage: false, functions: false, messaging: false, sites: false, realtime: false };
+	$: selectedFeatures = features.filter((f) => featureChecked[f.id]).map((f) => f.id);
+
+	const sdkOptions = Object.entries(SDK_OPTIONS).map(([key, sdk]) => ({
+		label: sdk.name,
+		value: key
+	}));
+
+	$: frameworkOptions = (SDK_OPTIONS[selectedSDK]?.frameworks || []).map((f) => ({
+		label: f.charAt(0).toUpperCase() + f.slice(1),
+		value: f
+	}));
+
 	function updateFrameworks() {
 		const sdk = SDK_OPTIONS[selectedSDK];
 		if (sdk && sdk.frameworks.length > 0) {
 			selectedFramework = sdk.frameworks[0];
 		}
 	}
-	
+
 	async function generate() {
 		generatedRules = await generateRules({
 			sdk: selectedSDK,
@@ -33,7 +57,7 @@
 		});
 		previewVisible = true;
 	}
-	
+
 	function downloadRules() {
 		const blob = new Blob([generatedRules], { type: 'text/markdown' });
 		const url = URL.createObjectURL(blob);
@@ -61,15 +85,7 @@
 			}, 2000);
 		}
 	}
-	
-	/** @param {string} featureId */
-	function toggleFeature(featureId) {
-		if (selectedFeatures.includes(featureId)) {
-			selectedFeatures = selectedFeatures.filter(f => f !== featureId);
-		} else {
-			selectedFeatures = [...selectedFeatures, featureId];
-		}
-	}
+
 </script>
 
 <svelte:head>
@@ -78,71 +94,72 @@
 
 <div class="main-layout">
 	<aside class="sidebar">
-		<div class="form-content">
-			<div class="form-section">
-				<label class="label" for="sdk-select">Select SDK:</label>
-				<select class="input-field" id="sdk-select" bind:value={selectedSDK} on:change={updateFrameworks}>
-					{#each Object.entries(SDK_OPTIONS) as [key, value]}
-						<option value={key}>{value.name}</option>
-					{/each}
-				</select>
-			</div>
+		<Layout.Stack gap="xl">
+			<Layout.Stack direction="row" alignItems="center" gap="l">
+				<img src={appwriteLogo} alt="Appwrite" class="logo" />
+				<Typography.Title size="s">Rules Generator</Typography.Title>
+			</Layout.Stack>
 
-			<div class="form-section">
-				<label class="label" for="framework-select">Select Framework:</label>
-				<select class="input-field" id="framework-select" bind:value={selectedFramework}>
-					{#each SDK_OPTIONS[selectedSDK]?.frameworks || [] as framework}
-						<option value={framework}>{framework.charAt(0).toUpperCase() + framework.slice(1)}</option>
-					{/each}
-				</select>
-			</div>
+			<Layout.Stack gap="l">
+				<Input.Select
+					label="SDK"
+					required={true}
+					options={sdkOptions}
+					bind:value={selectedSDK}
+					on:change={updateFrameworks}
+				/>
 
-			<div class="form-section">
-				<p class="label">Select Features:</p>
-				<div class="features-list">
-					{#each features as feature}
-						<label class="checkbox">
-							<input
-								type="checkbox"
-								checked={selectedFeatures.includes(feature.id)}
-								on:change={() => toggleFeature(feature.id)}
-							/>
-							<span>{feature.label}</span>
-						</label>
-					{/each}
-				</div>
-			</div>
+				<Input.Select
+					label="Framework"
+					required={true}
+					options={frameworkOptions}
+					bind:value={selectedFramework}
+				/>
+			</Layout.Stack>
 
-			<button class="button is-primary" on:click={generate}>
-				Generate Rules
-			</button>
-		</div>
+			<Layout.Stack gap="s">
+				<Typography.Text variant="m-500">Features</Typography.Text>
+				{#each features as feature}
+					<Selector.Checkbox
+						id={feature.id}
+						size="s"
+						label={feature.label}
+						bind:checked={featureChecked[feature.id]}
+					/>
+				{/each}
+			</Layout.Stack>
+
+			<Button.Button variant="primary" on:click={generate}>Generate Rules</Button.Button>
+		</Layout.Stack>
 	</aside>
 
 	<main class="content-area">
 		{#if previewVisible && generatedRules}
-			<div class="card">
-				<div class="preview-header">
-					<h2>Generated Rules</h2>
-					<div class="button-group">
-						<button class="button is-secondary" on:click={copyRules}>
-							{copyButtonText}
-						</button>
-						<button class="button is-secondary" on:click={downloadRules}>
-							Download AGENTS.md
-						</button>
+			<Card.Base padding="s">
+				<Layout.Stack gap="l">
+					<div class="preview-header">
+						<Typography.Title size="s">Generated Rules</Typography.Title>
+						<div class="button-group">
+							<Button.Button variant="secondary" size="s" on:click={copyRules}>
+								{copyButtonText}
+							</Button.Button>
+							<Button.Button variant="secondary" size="s" on:click={downloadRules}>
+								Download AGENTS.md
+							</Button.Button>
+						</div>
 					</div>
-				</div>
-				<div class="code-panel">
-					<pre><code>{generatedRules}</code></pre>
-				</div>
-			</div>
+					<div class="code-panel">
+						<Code code={generatedRules} lang="md" hideHeader={true} lineNumbers={false} />
+					</div>
+				</Layout.Stack>
+			</Card.Base>
 		{:else}
-			<div class="card">
-				<div class="empty-state">
-					<p>Select your options and click "Generate Rules" to see the output here.</p>
-				</div>
-			</div>
+			<Card.Base padding="l">
+				<Empty
+					title="No Rules Generated"
+					description="Select your options and click &quot;Generate Rules&quot; to see the output here."
+				/>
+			</Card.Base>
 		{/if}
 	</main>
 </div>
@@ -152,81 +169,25 @@
 		-webkit-tap-highlight-color: transparent;
 	}
 
+	.logo {
+		height: var(--icon-size-l);
+		width: auto;
+	}
+
 	.main-layout {
 		display: flex;
 		width: 100%;
 		min-height: 100vh;
-		padding: 0;
-		box-sizing: border-box;
-		gap: 0;
-		align-items: stretch;
 	}
 
 	.sidebar {
-		flex: 0 0 320px;
-		display: flex;
-		flex-direction: column;
+		flex: 0 0 300px;
 		height: 100vh;
-		padding: 1.5rem;
-		background-color: hsl(var(--color-neutral-100));
-		border-right: solid .0625rem hsl(var(--color-border));
+		padding: var(--space-9);
+		background-color: var(--bgcolor-neutral-default);
+		border-right: var(--border-width-s) solid var(--border-neutral);
 		box-sizing: border-box;
-	}
-
-	.form-content {
-		flex: 1;
 		overflow-y: auto;
-		padding-bottom: 1.5rem;
-	}
-
-	.form-section {
-		margin-bottom: 2rem;
-	}
-
-	.form-section:last-of-type {
-		margin-bottom: 0;
-	}
-
-	.label {
-		display: block;
-		margin-bottom: 0.5rem;
-	}
-
-	.input-field {
-		width: 100%;
-		min-height: 44px;
-		font-size: 1rem;
-		padding: 0.5rem 0.75rem;
-	}
-
-	.features-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		margin-top: 0.5rem;
-	}
-
-	.checkbox {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		cursor: pointer;
-		min-height: 44px;
-		padding: 0.5rem 0;
-	}
-
-	.checkbox input[type="checkbox"] {
-		width: 20px;
-		height: 20px;
-		min-width: 20px;
-		cursor: pointer;
-	}
-
-	.button {
-		width: 100%;
-		margin-top: 1.5rem;
-		flex-shrink: 0;
-		min-height: 44px;
 	}
 
 	.content-area {
@@ -234,18 +195,23 @@
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		padding: 5rem;
+		padding: var(--space-10);
 		max-height: 100vh;
 		min-height: 100vh;
 		box-sizing: border-box;
 		overflow: hidden;
 	}
 
-	.content-area .card {
+	.content-area > :global(*) {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	.content-area > :global(*) > :global(*) {
+		flex: 1;
 		min-height: 0;
 	}
 
@@ -253,22 +219,12 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1rem;
 		flex-shrink: 0;
 	}
 
-	.preview-header h2 {
-		margin: 0;
-	}
-
-	.preview-header .button-group {
+	.button-group {
 		display: flex;
-		gap: 0.75rem;
-	}
-
-	.preview-header .button {
-		width: auto;
-		margin-top: 0;
+		gap: var(--gap-s);
 	}
 
 	.code-panel {
@@ -276,32 +232,6 @@
 		overflow-y: auto;
 		overflow-x: auto;
 		min-height: 0;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.code-panel pre {
-		margin: 0;
-		overflow-x: auto;
-		min-width: fit-content;
-	}
-
-	.code-panel code {
-		padding: 1rem;
-		display: block;
-		white-space: pre;
-		word-wrap: normal;
-		overflow-wrap: normal;
-		font-size: 0.875rem;
-		line-height: 1.5;
-	}
-
-	.empty-state {
-		padding: 4rem 2rem;
-		text-align: center;
-		flex: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 
 	/* Tablet and below */
@@ -309,17 +239,15 @@
 		.main-layout {
 			flex-direction: column;
 			min-height: auto;
-			padding: 1rem;
 		}
 
 		.sidebar {
 			flex: 1;
 			width: 100%;
 			height: auto;
-			min-height: auto;
 			border-right: none;
-			border-bottom: solid .0625rem hsl(var(--color-border));
-			padding: 1.25rem;
+			border-bottom: var(--border-width-s) solid var(--border-neutral);
+			padding: var(--space-8);
 		}
 
 		.content-area {
@@ -327,127 +255,59 @@
 			max-height: none;
 			min-height: auto;
 			overflow: visible;
-			padding: 1.5rem;
+			padding: var(--space-8);
 		}
 
 		.code-panel {
 			max-height: 600px;
 		}
-
-		.empty-state {
-			padding: 2rem 1rem;
-		}
 	}
 
 	/* Mobile devices */
 	@media (max-width: 768px) {
-		.main-layout {
-			padding: 0.75rem;
-		}
-
 		.sidebar {
-			padding: 1rem;
-		}
-
-		.form-section {
-			margin-bottom: 1.5rem;
+			padding: var(--space-7);
 		}
 
 		.content-area {
-			padding: 1rem;
+			padding: var(--space-7);
 		}
 
 		.preview-header {
 			flex-direction: column;
 			align-items: stretch;
-			gap: 1rem;
+			gap: var(--gap-s);
 		}
 
-		.preview-header h2 {
-			font-size: 1.5rem;
-		}
-
-		.preview-header .button-group {
+		.button-group {
 			flex-direction: column;
-			gap: 0.5rem;
-		}
-
-		.preview-header .button {
-			width: 100%;
-			min-height: 44px;
+			gap: var(--gap-xs);
 		}
 
 		.code-panel {
 			max-height: 400px;
 		}
-
-		.code-panel code {
-			padding: 0.75rem;
-			font-size: 0.8125rem;
-		}
-
-		.empty-state {
-			padding: 1.5rem 0.75rem;
-		}
-
-		.empty-state p {
-			font-size: 0.9375rem;
-		}
 	}
 
 	/* Small mobile devices */
 	@media (max-width: 480px) {
-		.main-layout {
-			padding: 0.5rem;
-		}
-
 		.sidebar {
-			padding: 0.875rem;
+			padding: var(--space-6);
 		}
 
 		.content-area {
-			padding: 0.75rem;
-		}
-
-		.preview-header h2 {
-			font-size: 1.25rem;
+			padding: var(--space-6);
 		}
 
 		.code-panel {
 			max-height: 350px;
 		}
-
-		.code-panel code {
-			padding: 0.5rem;
-			font-size: 0.75rem;
-		}
-
-		.empty-state {
-			padding: 1rem 0.5rem;
-		}
 	}
 
-	/* Very small screens - landscape mobile */
+	/* Landscape mobile */
 	@media (max-width: 640px) and (orientation: landscape) {
 		.code-panel {
 			max-height: 250px;
 		}
 	}
-
-	/* Touch device optimizations */
-	@media (hover: none) and (pointer: coarse) {
-		.button {
-			min-height: 48px;
-		}
-
-		.input-field {
-			min-height: 48px;
-		}
-
-		.checkbox {
-			min-height: 48px;
-		}
-	}
 </style>
-
-
