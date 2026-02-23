@@ -104,7 +104,7 @@
 		<Layout.Stack gap="xl">
 			<Layout.Stack direction="row" alignItems="center" gap="l">
 				<img src={appwriteLogo} alt="Appwrite" class="logo" />
-				<Typography.Title size="s">Rules Generator</Typography.Title>
+				<Typography.Title size="s">AGENTS.md Generator</Typography.Title>
 			</Layout.Stack>
 
 			<Layout.Stack gap="l">
@@ -136,7 +136,9 @@
 				{/each}
 			</Layout.Stack>
 
-			<Button.Button variant="primary" size="s" on:click={generate}>Generate Rules</Button.Button>
+			<Button.Button variant="primary" size="s" on:click={generate}
+				>Generate AGENTS.md</Button.Button
+			>
 		</Layout.Stack>
 	</aside>
 
@@ -145,7 +147,7 @@
 			<Card.Base padding="s">
 				<Layout.Stack gap="l">
 					<div class="preview-header">
-						<Typography.Title size="s">Generated Rules</Typography.Title>
+						<Typography.Title size="s">Generated AGENTS.md</Typography.Title>
 						<div class="button-group">
 							<Button.Button variant="secondary" size="s" on:click={copyRules}>
 								{copyButtonText}
@@ -163,8 +165,8 @@
 		{:else}
 			<Card.Base padding="l">
 				<Empty
-					title="No Rules Generated"
-					description="Select your options and click &quot;Generate Rules&quot; to see the output here."
+					title="No AGENTS.md Generated"
+					description="Select your options and click &quot;Generate AGENTS.md&quot; to see the output here."
 				/>
 			</Card.Base>
 		{/if}
