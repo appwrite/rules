@@ -29,7 +29,15 @@
 	];
 
 	/** @type {Record<string, boolean>} */
-	let featureChecked = { auth: true, database: false, storage: false, functions: false, messaging: false, sites: false, realtime: false };
+	let featureChecked = {
+		auth: true,
+		database: false,
+		storage: false,
+		functions: false,
+		messaging: false,
+		sites: false,
+		realtime: false
+	};
 	$: selectedFeatures = features.filter((f) => featureChecked[f.id]).map((f) => f.id);
 
 	const sdkOptions = Object.entries(SDK_OPTIONS).map(([key, sdk]) => ({
@@ -85,7 +93,6 @@
 			}, 2000);
 		}
 	}
-
 </script>
 
 <svelte:head>
@@ -129,7 +136,7 @@
 				{/each}
 			</Layout.Stack>
 
-			<Button.Button variant="primary" on:click={generate}>Generate Rules</Button.Button>
+			<Button.Button variant="primary" size="s" on:click={generate}>Generate Rules</Button.Button>
 		</Layout.Stack>
 	</aside>
 
