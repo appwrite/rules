@@ -44,7 +44,7 @@ export const vanilla = async (features = []) => {
 	const version = await getSDKVersion('server-kotlin');
 	const installation = generateInstallationTemplate(version);
 	const kotlinImplementation = getServerImplementationGuide('kotlin', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

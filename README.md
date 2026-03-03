@@ -19,42 +19,45 @@ A web application for generating comprehensive AGENTS.md files for Appwrite deve
 
 ## Supported SDKs and Frameworks
 
-| SDK | Frameworks |
-|-----|------------|
+| SDK                   | Frameworks                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------ |
 | JavaScript/TypeScript | Next.js, React, Vue, Svelte, Angular, Astro, Nuxt, Qwik, Solid, TanStack, Node.js, Vanilla |
-| React Native | React Native, Vanilla |
-| Python | Flask, Django, FastAPI, Server |
-| Flutter/Dart | Flutter, Server |
-| Apple | Vanilla |
-| Android | Vanilla |
-| Swift | Server, Vanilla |
-| Kotlin | Server, Vanilla |
-| PHP | Laravel, Symfony, Server |
-| Go | Gin, Fiber, Server |
-| Ruby | Rails, Server |
-| .NET | ASP.NET, Server, Vanilla |
+| React Native          | React Native, Vanilla                                                                      |
+| Python                | Flask, Django, FastAPI, Server                                                             |
+| Flutter/Dart          | Flutter, Server                                                                            |
+| Apple                 | Vanilla                                                                                    |
+| Android               | Vanilla                                                                                    |
+| Swift                 | Server, Vanilla                                                                            |
+| Kotlin                | Server, Vanilla                                                                            |
+| PHP                   | Laravel, Symfony, Server                                                                   |
+| Go                    | Gin, Fiber, Server                                                                         |
+| Ruby                  | Rails, Server                                                                              |
+| .NET                  | ASP.NET, Server, Vanilla                                                                   |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd appwrite-cursor-rules
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Start the development server:
+
 ```bash
 pnpm dev
 ```
@@ -82,6 +85,7 @@ The application exposes REST API endpoints for programmatic access to rule gener
 Returns a list of all available SDKs, their frameworks, and available features.
 
 **Response:**
+
 ```json
 {
   "sdks": [
@@ -106,6 +110,7 @@ Returns a list of all available SDKs, their frameworks, and available features.
 Generate rules using query parameters.
 
 **Query Parameters:**
+
 - `sdk` (required): SDK identifier (e.g., `javascript`, `python`, `go`)
 - `framework` (required): Framework identifier (e.g., `nextjs`, `react`, `flask`)
 - `features` (optional): Comma-separated list of features (default: `auth`)
@@ -114,6 +119,7 @@ Generate rules using query parameters.
 - `format` (optional): Response format (`text` or `json`, default: `text`)
 
 **Example:**
+
 ```bash
 # Get rules as markdown text
 curl "http://localhost:5173/api/rules?sdk=javascript&framework=nextjs&features=auth,database&format=text"
@@ -126,21 +132,24 @@ curl "http://localhost:5173/api/rules?sdk=python&framework=flask&features=auth,s
 ```
 
 **Response (format=text):**
+
 - Content-Type: `text/markdown; charset=utf-8`
 - Returns the generated rules as markdown text
 - Includes `Content-Disposition` header for file download
 
 **Response (format=json):**
+
 ```json
 {
-  "sdk": "javascript",
-  "framework": "nextjs",
-  "features": ["auth", "database"],
-  "rules": "# Appwrite Development Rules\n\n> You are an expert developer...\n\n## Overview\n..."
+	"sdk": "javascript",
+	"framework": "nextjs",
+	"features": ["auth", "database"],
+	"rules": "# Appwrite Development Rules\n\n> You are an expert developer...\n\n## Overview\n..."
 }
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid SDK or framework
 - `500 Internal Server Error`: Server error during rule generation
 
@@ -220,5 +229,3 @@ The generated AGENTS.md file follows the [AGENTS.md standard](https://agents.md/
 - **Product Links**: Links to official Appwrite documentation
 
 The AGENTS.md format is compatible with multiple AI coding assistants including Cursor, GitHub Copilot, OpenAI Codex, and others.
-
-

@@ -7,4 +7,3 @@ export const solid = createFrameworkTemplate({
 	securityNotes: clientSecurityWithEnv('.env'),
 	additionalNotes: authNote
 });
-

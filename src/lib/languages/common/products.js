@@ -110,4 +110,3 @@ export const realtimeProductLinks = `**Realtime Documentation:**
 - [Account Subscriptions](https://appwrite.io/docs/products/realtime/subscribe-to-account) - Subscribe to account changes
 - [Channels](https://appwrite.io/docs/products/realtime/channels) - Available subscription channels
 - [Events](https://appwrite.io/docs/products/realtime/events) - Event types and payloads`;
-

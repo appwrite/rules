@@ -44,7 +44,7 @@ export const vanilla = async (features = []) => {
 	const version = await getSDKVersion('client-android');
 	const installation = generateInstallationTemplate(version);
 	const androidImplementation = getMobileImplementationGuide('android', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

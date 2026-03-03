@@ -34,7 +34,7 @@ export const vanilla = async (features = []) => {
 	const version = await getSDKVersion('server-swift');
 	const installation = generateInstallationTemplate(version);
 	const swiftImplementation = getServerImplementationGuide('swift', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

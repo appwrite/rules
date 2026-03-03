@@ -6,4 +6,3 @@ export const vue = createFrameworkTemplate({
 	installation: jsInstall,
 	securityNotes: clientSecurityWithEnv('.env')
 });
-

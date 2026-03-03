@@ -1,302 +1,286 @@
 /**
- * Essential permission patterns for Appwrite multi-tenancy
- * 
- * These examples demonstrate the critical patterns that differentiate
- * good multi-tenant architecture from poor practices. For full API
- * documentation, see the official Appwrite docs.
+ * Essential permission patterns for Appwrite
+ *
+ * These examples demonstrate the key patterns for building
+ * secure applications with Appwrite's permission system.
  */
 
 /**
  * Permission patterns for each SDK
- * Only includes the essential anti-pattern vs correct pattern examples
+ * @type {Record<string, { userPermissions: string, teamPermissions: string, teamIsolation: string }>}
  */
 const permissionPatterns = {
 	javascript: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission.read(Role.user('<USER_ID>'))
 Permission.write(Role.user('<USER_ID>'))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team('<TEAM_ID>', 'member'))
 Permission.update(Role.team('<TEAM_ID>', 'admin'))
 Permission.delete(Role.team('<TEAM_ID>', 'owner'))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
-const response = await tablesDB.listRows(
-  '<DATABASE_ID>',
-  '<TABLE_ID>',
-  [
-    Query.equal('teamId', '<TEAM_ID>'),  // Critical for isolation
-    Query.orderDesc('$createdAt'),
-    Query.limit(25)
+
+		teamIsolation: `// Set team permissions when creating rows
+await tablesDB.createRow({
+  databaseId: '<DATABASE_ID>',
+  tableId: '<TABLE_ID>',
+  rowId: ID.unique(),
+  data: { title: 'Team Resource' },
+  permissions: [
+    Permission.read(Role.team('<TEAM_ID>')),
+    Permission.write(Role.team('<TEAM_ID>', 'admin'))
   ]
-);`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-const memberships = await teams.listMemberships('<TEAM_ID>');
-const membership = memberships.memberships.find(m => m.userId === userId);
+});
 
-if (!membership?.roles.includes('admin')) {
-  throw new Error('Insufficient permissions');
-}`
+// Appwrite automatically filters — only returns rows the user has access to
+const response = await tablesDB.listRows({
+  databaseId: '<DATABASE_ID>',
+  tableId: '<TABLE_ID>'
+});`
 	},
-	
+
 	python: {
-		avoidUserPermissions: `# DON'T: User-specific permissions don't scale
+		userPermissions: `# User-specific permissions: use for personal/owned resources
 Permission.read(Role.user('<USER_ID>'))
 Permission.write(Role.user('<USER_ID>'))`,
-		
-		preferTeamPermissions: `# DO: Team-based permissions scale with your organization
+
+		teamPermissions: `# Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team('<TEAM_ID>', 'member'))
 Permission.update(Role.team('<TEAM_ID>', 'admin'))
 Permission.delete(Role.team('<TEAM_ID>', 'owner'))`,
-		
-		queryWithTeamId: `# ALWAYS filter by teamId for tenant isolation
-response = tables_db.list_rows(
-    database_id='<DATABASE_ID>',
-    table_id='<TABLE_ID>',
-    queries=[
-        Query.equal('teamId', '<TEAM_ID>'),  # Critical for isolation
-        Query.order_desc('$createdAt'),
-        Query.limit(25)
-    ]
-)`,
-		
-		roleCheck: `# Verify permissions before sensitive operations
-memberships = teams.list_memberships('<TEAM_ID>')
-membership = next((m for m in memberships.memberships if m.user_id == user_id), None)
 
-if not membership or 'admin' not in membership.roles:
-    raise Exception('Insufficient permissions')`
+		teamIsolation: `# Set team permissions when creating rows
+tables_db.create_row(
+    '<DATABASE_ID>',
+    '<TABLE_ID>',
+    ID.unique(),
+    {'title': 'Team Resource'},
+    [
+        Permission.read(Role.team('<TEAM_ID>')),
+        Permission.write(Role.team('<TEAM_ID>', 'admin'))
+    ]
+)
+
+# Appwrite automatically filters — only returns rows the user has access to
+response = tables_db.list_rows(
+    '<DATABASE_ID>',
+    '<TABLE_ID>'
+)`
 	},
-	
+
 	php: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission::read(Role::user('<USER_ID>'))
 Permission::write(Role::user('<USER_ID>'))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission::read(Role::team('<TEAM_ID>', 'member'))
 Permission::update(Role::team('<TEAM_ID>', 'admin'))
 Permission::delete(Role::team('<TEAM_ID>', 'owner'))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
-$response = $tablesDB->listRows(
-    databaseId: '<DATABASE_ID>',
-    tableId: '<TABLE_ID>',
-    queries: [
-        Query::equal('teamId', '<TEAM_ID>'),  // Critical for isolation
-        Query::orderDesc('$createdAt'),
-        Query::limit(25)
-    ]
-);`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-$memberships = $teams->listMemberships('<TEAM_ID>');
-$membership = array_filter($memberships->memberships, fn($m) => $m->userId === $userId);
 
-if (empty($membership) || !in_array('admin', current($membership)->roles)) {
-    throw new Exception('Insufficient permissions');
-}`
+		teamIsolation: `// Set team permissions when creating rows
+$tablesDB->createRow(
+    '<DATABASE_ID>',
+    '<TABLE_ID>',
+    ID::unique(),
+    ['title' => 'Team Resource'],
+    [
+        Permission::read(Role::team('<TEAM_ID>')),
+        Permission::write(Role::team('<TEAM_ID>', 'admin'))
+    ]
+);
+
+// Appwrite automatically filters — only returns rows the user has access to
+$response = $tablesDB->listRows(
+    '<DATABASE_ID>',
+    '<TABLE_ID>'
+);`
 	},
-	
+
 	kotlin: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission.read(Role.user("<USER_ID>"))
 Permission.write(Role.user("<USER_ID>"))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team("<TEAM_ID>", "member"))
 Permission.update(Role.team("<TEAM_ID>", "admin"))
 Permission.delete(Role.team("<TEAM_ID>", "owner"))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
-val response = tablesDB.listRows(
+
+		teamIsolation: `// Set team permissions when creating rows
+tablesDB.createRow(
     databaseId = "<DATABASE_ID>",
     tableId = "<TABLE_ID>",
-    queries = listOf(
-        Query.equal("teamId", "<TEAM_ID>"),  // Critical for isolation
-        Query.orderDesc("\$createdAt"),
-        Query.limit(25)
+    rowId = ID.unique(),
+    data = mapOf("title" to "Team Resource"),
+    permissions = listOf(
+        Permission.read(Role.team("<TEAM_ID>")),
+        Permission.write(Role.team("<TEAM_ID>", "admin"))
     )
-)`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-val memberships = teams.listMemberships("<TEAM_ID>")
-val membership = memberships.memberships.find { it.userId == userId }
+)
 
-if (membership == null || "admin" !in membership.roles) {
-    throw Exception("Insufficient permissions")
-}`
+// Appwrite automatically filters — only returns rows the user has access to
+val response = tablesDB.listRows(
+    databaseId = "<DATABASE_ID>",
+    tableId = "<TABLE_ID>"
+)`
 	},
-	
+
 	swift: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission.read(Role.user("<USER_ID>"))
 Permission.write(Role.user("<USER_ID>"))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team("<TEAM_ID>", "member"))
 Permission.update(Role.team("<TEAM_ID>", "admin"))
 Permission.delete(Role.team("<TEAM_ID>", "owner"))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
-let response = try await tablesDB.listRows(
+
+		teamIsolation: `// Set team permissions when creating rows
+let row = try await tablesDB.createRow(
     databaseId: "<DATABASE_ID>",
     tableId: "<TABLE_ID>",
-    queries: [
-        Query.equal("teamId", "<TEAM_ID>"),  // Critical for isolation
-        Query.orderDesc("$createdAt"),
-        Query.limit(25)
+    rowId: ID.unique(),
+    data: ["title": "Team Resource"],
+    permissions: [
+        Permission.read(Role.team("<TEAM_ID>")),
+        Permission.write(Role.team("<TEAM_ID>", "admin"))
     ]
-)`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-let memberships = try await teams.listMemberships("<TEAM_ID>")
-guard let membership = memberships.memberships.first(where: { $0.userId == userId }),
-      membership.roles.contains("admin") else {
-    throw AppError.insufficientPermissions
-}`
+)
+
+// Appwrite automatically filters — only returns rows the user has access to
+let response = try await tablesDB.listRows(
+    databaseId: "<DATABASE_ID>",
+    tableId: "<TABLE_ID>"
+)`
 	},
-	
+
 	dart: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission.read(Role.user('<USER_ID>'))
 Permission.write(Role.user('<USER_ID>'))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team('<TEAM_ID>', 'member'))
 Permission.update(Role.team('<TEAM_ID>', 'admin'))
 Permission.delete(Role.team('<TEAM_ID>', 'owner'))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
+
+		teamIsolation: `// Set team permissions when creating rows
+final row = await tablesDB.createRow(
+  databaseId: '<DATABASE_ID>',
+  tableId: '<TABLE_ID>',
+  rowId: ID.unique(),
+  data: {'title': 'Team Resource'},
+  permissions: [
+    Permission.read(Role.team('<TEAM_ID>')),
+    Permission.write(Role.team('<TEAM_ID>', 'admin')),
+  ],
+);
+
+// Appwrite automatically filters — only returns rows the user has access to
 final response = await tablesDB.listRows(
   databaseId: '<DATABASE_ID>',
   tableId: '<TABLE_ID>',
-  queries: [
-    Query.equal('teamId', '<TEAM_ID>'),  // Critical for isolation
-    Query.orderDesc('\$createdAt'),
-    Query.limit(25),
-  ],
-);`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-final memberships = await teams.listMemberships('<TEAM_ID>');
-final membership = memberships.memberships.firstWhere(
-  (m) => m.userId == userId,
-  orElse: () => null,
-);
-
-if (membership == null || !membership.roles.contains('admin')) {
-  throw Exception('Insufficient permissions');
-}`
+);`
 	},
-	
+
 	go: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 permission.Read(role.User("<USER_ID>"))
 permission.Write(role.User("<USER_ID>"))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 permission.Read(role.Team("<TEAM_ID>", "member"))
 permission.Update(role.Team("<TEAM_ID>", "admin"))
 permission.Delete(role.Team("<TEAM_ID>", "owner"))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
+
+		teamIsolation: `// Set team permissions when creating rows
+row, err := tablesDB.CreateRow(
+    "<DATABASE_ID>",
+    "<TABLE_ID>",
+    id.Unique(),
+    map[string]interface{}{"title": "Team Resource"},
+    tablesDB.WithCreateRowPermissions([]string{
+        permission.Read(role.Team("<TEAM_ID>")),
+        permission.Write(role.Team("<TEAM_ID>", "admin")),
+    }),
+)
+
+// Appwrite automatically filters — only returns rows the user has access to
 response, err := tablesDB.ListRows(
     "<DATABASE_ID>",
     "<TABLE_ID>",
-    tablesDB.WithListRowsQueries([]string{
-        query.Equal("teamId", "<TEAM_ID>"),  // Critical for isolation
-        query.OrderDesc("$createdAt"),
-        query.Limit(25),
-    }),
-)`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-memberships, _ := teams.ListMemberships("<TEAM_ID>")
-var membership *models.Membership
-for _, m := range memberships.Memberships {
-    if m.UserId == userId {
-        membership = &m
-        break
-    }
-}
-
-if membership == nil || !contains(membership.Roles, "admin") {
-    return errors.New("insufficient permissions")
-}`
+)`
 	},
-	
+
 	ruby: {
-		avoidUserPermissions: `# DON'T: User-specific permissions don't scale
+		userPermissions: `# User-specific permissions: use for personal/owned resources
 Permission.read(Role.user('<USER_ID>'))
 Permission.write(Role.user('<USER_ID>'))`,
-		
-		preferTeamPermissions: `# DO: Team-based permissions scale with your organization
+
+		teamPermissions: `# Team-based permissions: use for shared/collaborative resources
 Permission.read(Role.team('<TEAM_ID>', 'member'))
 Permission.update(Role.team('<TEAM_ID>', 'admin'))
 Permission.delete(Role.team('<TEAM_ID>', 'owner'))`,
-		
-		queryWithTeamId: `# ALWAYS filter by teamId for tenant isolation
-response = tables_db.list_rows(
+
+		teamIsolation: `# Set team permissions when creating rows
+tables_db.create_row(
   database_id: '<DATABASE_ID>',
   table_id: '<TABLE_ID>',
-  queries: [
-    Query.equal('teamId', '<TEAM_ID>'),  # Critical for isolation
-    Query.order_desc('$createdAt'),
-    Query.limit(25)
+  row_id: Appwrite::ID.unique,
+  data: { title: 'Team Resource' },
+  permissions: [
+    Permission.read(Role.team('<TEAM_ID>')),
+    Permission.write(Role.team('<TEAM_ID>', 'admin'))
   ]
-)`,
-		
-		roleCheck: `# Verify permissions before sensitive operations
-memberships = teams.list_memberships('<TEAM_ID>')
-membership = memberships.memberships.find { |m| m.user_id == user_id }
+)
 
-unless membership&.roles&.include?('admin')
-  raise 'Insufficient permissions'
-end`
+# Appwrite automatically filters — only returns rows the user has access to
+response = tables_db.list_rows(
+  database_id: '<DATABASE_ID>',
+  table_id: '<TABLE_ID>'
+)`
 	},
-	
+
 	dotnet: {
-		avoidUserPermissions: `// DON'T: User-specific permissions don't scale
+		userPermissions: `// User-specific permissions: use for personal/owned resources
 Permission.Read(Role.User("<USER_ID>"))
 Permission.Write(Role.User("<USER_ID>"))`,
-		
-		preferTeamPermissions: `// DO: Team-based permissions scale with your organization
+
+		teamPermissions: `// Team-based permissions: use for shared/collaborative resources
 Permission.Read(Role.Team("<TEAM_ID>", "member"))
 Permission.Update(Role.Team("<TEAM_ID>", "admin"))
 Permission.Delete(Role.Team("<TEAM_ID>", "owner"))`,
-		
-		queryWithTeamId: `// ALWAYS filter by teamId for tenant isolation
-var response = await tablesDB.ListRows(
-    databaseId: "<DATABASE_ID>",
-    tableId: "<TABLE_ID>",
-    queries: new List<string> {
-        Query.Equal("teamId", "<TEAM_ID>"),  // Critical for isolation
-        Query.OrderDesc("$createdAt"),
-        Query.Limit(25)
-    }
-);`,
-		
-		roleCheck: `// Verify permissions before sensitive operations
-var memberships = await teams.ListMemberships("<TEAM_ID>");
-var membership = memberships.Memberships.FirstOrDefault(m => m.UserId == userId);
 
-if (membership == null || !membership.Roles.Contains("admin"))
-{
-    throw new UnauthorizedAccessException("Insufficient permissions");
-}`
+		teamIsolation: `// Set team permissions when creating rows
+var row = await tablesDB.CreateRow(
+    "<DATABASE_ID>",
+    "<TABLE_ID>",
+    ID.Unique(),
+    new Dictionary<string, object> { { "title", "Team Resource" } },
+    new List<string>
+    {
+        Permission.Read(Role.Team("<TEAM_ID>")),
+        Permission.Write(Role.Team("<TEAM_ID>", "admin"))
+    }
+);
+
+// Appwrite automatically filters — only returns rows the user has access to
+var response = await tablesDB.ListRows(
+    "<DATABASE_ID>",
+    "<TABLE_ID>"
+);`
 	}
 };
 
 /**
  * Get permission examples for a specific SDK
  * @param {string} sdk - The SDK name
- * @returns {Object} Permission pattern examples
+ * @returns {{ userPermissions: string, teamPermissions: string, teamIsolation: string }} Permission pattern examples
  */
 export function getPermissionExamples(sdk) {
 	// Map SDK names to their pattern keys
+	/** @type {Record<string, string>} */
 	const sdkMap = {
 		javascript: 'javascript',
 		'react-native': 'javascript',
@@ -312,7 +296,7 @@ export function getPermissionExamples(sdk) {
 		flutter: 'dart',
 		dart: 'dart'
 	};
-	
+
 	const patternKey = sdkMap[sdk] || 'javascript';
 	return permissionPatterns[patternKey] || permissionPatterns.javascript;
 }

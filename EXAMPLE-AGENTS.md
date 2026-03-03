@@ -17,11 +17,13 @@ npm install node-appwrite
 You can also use yarn, pnpm, or bun instead.
 
 **Framework Documentation:**
+
 - [Next.js App Router Docs](https://nextjs.org/docs/app)
 - [Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
 - [Appwrite Quick Start](https://appwrite.io/docs/quick-starts/nextjs)
 
 **API References:**
+
 - [Users API](https://appwrite.io/docs/references/cloud/server-nodejs/users) - User management and administration
 - [Account API](https://appwrite.io/docs/references/cloud/server-nodejs/account) - Session management and account operations
 - [Databases API](https://appwrite.io/docs/references/cloud/server-nodejs/databases) - Database operations and queries
@@ -34,6 +36,7 @@ You can also use yarn, pnpm, or bun instead.
 Server-side rendering requires using the Server SDK instead of the client SDK.
 
 **Authentication Flow:**
+
 1. User credentials are sent from browser to your server
 2. Your server authenticates with Appwrite using the Server SDK
 3. Appwrite returns a session object
@@ -44,10 +47,12 @@ Server-side rendering requires using the Server SDK instead of the client SDK.
 **Key Implementation Details:**
 
 **Initialize Two Clients:**
+
 - **Admin Client**: Uses API key for unauthenticated requests and session creation
 - **Session Client**: Uses session cookie for user-specific requests
 
 **Best Practices:**
+
 - Use httpOnly, secure, and sameSite cookie flags
 - Create new session client per request
 - Never share clients between requests
@@ -57,44 +62,46 @@ Server-side rendering requires using the Server SDK instead of the client SDK.
 **See full SSR auth guide:** https://appwrite.io/docs/products/auth/server-side-rendering
 
 **Creating Sessions:**
+
 ```javascript
-import { Client, Account } from "node-appwrite";
+import { Client, Account } from 'node-appwrite';
 
 // In your login endpoint:
 const account = new Account(adminClient);
-const session = await account.createEmailPasswordSession(email, password);
+const session = await account.createEmailPasswordSession({ email, password });
 
 // Set httpOnly cookie with session secret
 res.cookie('a_session_<PROJECT_ID>', session.secret, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    expires: new Date(session.expire),
-    path: '/'
+	httpOnly: true,
+	secure: true,
+	sameSite: 'strict',
+	expires: new Date(session.expire),
+	path: '/'
 });
 ```
 
 **Making Authenticated Requests:**
+
 ```javascript
 // Read session from cookie
 const session = req.cookies['a_session_<PROJECT_ID>'];
 
 // Create session client
 const sessionClient = new Client()
-    .setEndpoint('https://cloud.appwrite.io/v1')
-    .setProject('<PROJECT_ID>')
-    .setSession(session);
+	.setEndpoint('https://cloud.appwrite.io/v1')
+	.setProject('<PROJECT_ID>')
+	.setSession(session);
 
 const account = new Account(sessionClient);
 const user = await account.get();
 ```
 
 **OAuth2 Flow:**
+
 1. Redirect to OAuth provider using createOAuth2Token
 2. Handle callback with userId and secret parameters
 3. Call createSession to exchange for session object
 4. Store session secret in cookie
-
 
 ## 🚨 Absolute Rules (Non-Negotiable)
 
@@ -123,13 +130,12 @@ const user = await account.get();
 - Use your language's type system to enforce constraints
 - Validate inputs with appropriate validation libraries for your language
 
-
-
 ## Next.js Server Action Pattern
 
 ### Mandatory Structure (App Router)
 
 Every server action must:
+
 1. Be marked with `'use server'`
 2. Authenticate immediately
 3. Validate input
@@ -140,35 +146,35 @@ Every server action must:
 
 ```typescript
 // app/actions/items.ts
-'use server'
+'use server';
 
-import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
 
 export async function createItem(formData: FormData) {
-  // 1. Authenticate first
-  const session = await auth()
-  if (!session?.user) throw new Error('Unauthorized')
+	// 1. Authenticate first
+	const session = await auth();
+	if (!session?.user) throw new Error('Unauthorized');
 
-  // 2. Validate input
-  const title = formData.get('title')?.toString()
-  const teamId = formData.get('teamId')?.toString()
-  
-  if (!title || title.length === 0 || title.length > 120) {
-    throw new Error('Invalid title')
-  }
+	// 2. Validate input
+	const title = formData.get('title')?.toString();
+	const teamId = formData.get('teamId')?.toString();
 
-  // 3. Use centralized db helper
-  const item = await db.items.create({
-    title: title.trim(),
-    description: null,
-    createdBy: session.user.id,
-    teamId: teamId ?? null,
-  })
+	if (!title || title.length === 0 || title.length > 120) {
+		throw new Error('Invalid title');
+	}
 
-  // 4. Revalidate and return
-  revalidatePath('/items')
-  return { item }
+	// 3. Use centralized db helper
+	const item = await db.items.create({
+		title: title.trim(),
+		description: null,
+		createdBy: session.user.id,
+		teamId: teamId ?? null
+	});
+
+	// 4. Revalidate and return
+	revalidatePath('/items');
+	return { item };
 }
 ```
 
@@ -176,33 +182,33 @@ export async function createItem(formData: FormData) {
 
 ```typescript
 // app/api/items/route.ts
-import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+	const session = await auth();
+	if (!session?.user) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+	}
 
-  const items = await db.items.listByOwner(session.user.id)
-  return NextResponse.json({ items })
+	const items = await db.items.listByOwner(session.user.id);
+	return NextResponse.json({ items });
 }
 
 export async function POST(request: Request) {
-  const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+	const session = await auth();
+	if (!session?.user) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+	}
 
-  const body = await request.json()
-  const item = await db.items.create({
-    ...body,
-    createdBy: session.user.id,
-  })
+	const body = await request.json();
+	const item = await db.items.create({
+		...body,
+		createdBy: session.user.id
+	});
 
-  return NextResponse.json({ item }, { status: 201 })
+	return NextResponse.json({ item }, { status: 201 });
 }
 ```
 
@@ -218,7 +224,7 @@ export default async function ItemsPage() {
   if (!session?.user) redirect('/login')
 
   const items = await db.items.listByOwner(session.user.id)
-  
+
   return <ItemsList items={items} />
 }
 ```
@@ -226,19 +232,19 @@ export default async function ItemsPage() {
 ### Environment Variables
 
 Required in `.env.local`:
+
 - `APPWRITE_ENDPOINT`
 - `APPWRITE_PROJECT_ID`
 - `APPWRITE_API_KEY`
 - `APPWRITE_DATABASE_ID`
 - `APPWRITE_BUCKET_ID` (if using storage)
 
-
-
 ## Database Implementation Rules
 
 ### Database Wrapper Requirements
 
 Create centralized database helpers that:
+
 - Configure the admin client with proper credentials
 - Handle project, database, and table IDs
 - Manage permissions automatically
@@ -255,25 +261,25 @@ Create centralized database helpers that:
 
 Every user-owned table must include a `createdBy` column.
 
-| Operation | Rule |
-|-----------|------|
-| **Create** | Set `createdBy` to authenticated user's `$id` |
-| **List** | Filter with `Query.equal('createdBy', [userId])` |
-| **Read** | Verify ownership before returning data |
+| Operation  | Rule                                                 |
+| ---------- | ---------------------------------------------------- |
+| **Create** | Set `createdBy` to authenticated user's `$id`        |
+| **List**   | Filter with `Query.equal('createdBy', [userId])`     |
+| **Read**   | Verify ownership before returning data               |
 | **Update** | Confirm ownership; NEVER allow `createdBy` to change |
-| **Delete** | Confirm ownership before deletion |
+| **Delete** | Confirm ownership before deletion                    |
 
 ### Team-Owned Entities (`teamId`)
 
 For shared workspaces and organization data:
 
-| Operation | Rule |
-|-----------|------|
-| **Create** | Set `teamId`; verify user is team member |
-| **List** | Filter with `Query.equal('teamId', [teamId])` |
-| **Read** | Verify team match AND user membership |
+| Operation  | Rule                                               |
+| ---------- | -------------------------------------------------- |
+| **Create** | Set `teamId`; verify user is team member           |
+| **List**   | Filter with `Query.equal('teamId', [teamId])`      |
+| **Read**   | Verify team match AND user membership              |
 | **Update** | Confirm membership; NEVER allow `teamId` to change |
-| **Delete** | Confirm membership before deletion |
+| **Delete** | Confirm membership before deletion                 |
 
 ---
 
@@ -297,90 +303,82 @@ For shared workspaces and organization data:
 - Updates: accept partial payload
 - Ownership fields (`createdBy`, `teamId`) are IMMUTABLE after creation
 
-
-
 ## Database Wrapper Template
 
 Create a centralized database helper at your designated location (e.g., `lib/db.ts` or `server/lib/db.ts`):
 
 ```typescript
-import { Client, TablesDB, Query, ID } from 'node-appwrite'
+import { Client, TablesDB, Query, ID } from 'node-appwrite';
 
 // Initialize admin client (server-side only)
 const client = new Client()
-  .setEndpoint(process.env.APPWRITE_ENDPOINT!)
-  .setProject(process.env.APPWRITE_PROJECT_ID!)
-  .setKey(process.env.APPWRITE_API_KEY!)
+	.setEndpoint(process.env.APPWRITE_ENDPOINT!)
+	.setProject(process.env.APPWRITE_PROJECT_ID!)
+	.setKey(process.env.APPWRITE_API_KEY!);
 
-const tablesDB = new TablesDB(client)
-const DATABASE_ID = process.env.APPWRITE_DATABASE_ID!
+const tablesDB = new TablesDB(client);
+const DATABASE_ID = process.env.APPWRITE_DATABASE_ID!;
 
 // Generic CRUD helper factory
 function createTable<T>(tableId: string) {
-  return {
-    async create(data: Omit<T, '$id' | '$createdAt' | '$updatedAt'>) {
-      const doc = await tablesDB.createRow(
-        DATABASE_ID,
-        tableId,
-        ID.unique(),
-        data
-      )
-      return doc as T
-    },
+	return {
+		async create(data: Omit<T, '$id' | '$createdAt' | '$updatedAt'>) {
+			const doc = await tablesDB.createRow(DATABASE_ID, tableId, ID.unique(), data);
+			return doc as T;
+		},
 
-    async get(id: string) {
-      try {
-        const doc = await tablesDB.getRow(DATABASE_ID, tableId, id)
-        return doc as T
-      } catch {
-        return null
-      }
-    },
+		async get(id: string) {
+			try {
+				const doc = await tablesDB.getRow(DATABASE_ID, tableId, id);
+				return doc as T;
+			} catch {
+				return null;
+			}
+		},
 
-    async listByOwner(userId: string) {
-      const response = await tablesDB.listRows(DATABASE_ID, tableId, [
-        Query.equal('createdBy', [userId]),
-        Query.orderDesc('$createdAt'),
-      ])
-      return response.rows as T[]
-    },
+		async listByOwner(userId: string) {
+			const response = await tablesDB.listRows(DATABASE_ID, tableId, [
+				Query.equal('createdBy', [userId]),
+				Query.orderDesc('$createdAt')
+			]);
+			return response.rows as T[];
+		},
 
-    async listByTeam(teamId: string) {
-      const response = await tablesDB.listRows(DATABASE_ID, tableId, [
-        Query.equal('teamId', [teamId]),
-        Query.orderDesc('$createdAt'),
-      ])
-      return response.rows as T[]
-    },
+		async listByTeam(teamId: string) {
+			const response = await tablesDB.listRows(DATABASE_ID, tableId, [
+				Query.equal('teamId', [teamId]),
+				Query.orderDesc('$createdAt')
+			]);
+			return response.rows as T[];
+		},
 
-    async update(id: string, data: Partial<T>) {
-      // Remove immutable columns
-      const { $id, $createdAt, $updatedAt, createdBy, teamId, ...updateData } = data as any
-      const doc = await tablesDB.updateRow(DATABASE_ID, tableId, id, updateData)
-      return doc as T
-    },
+		async update(id: string, data: Partial<T>) {
+			// Remove immutable columns
+			const { $id, $createdAt, $updatedAt, createdBy, teamId, ...updateData } = data as any;
+			const doc = await tablesDB.updateRow(DATABASE_ID, tableId, id, updateData);
+			return doc as T;
+		},
 
-    async delete(id: string) {
-      await tablesDB.deleteRow(DATABASE_ID, tableId, id)
-    },
-  }
+		async delete(id: string) {
+			await tablesDB.deleteRow(DATABASE_ID, tableId, id);
+		}
+	};
 }
 
 // Export typed tables
 export const db = {
-  items: createTable<Item>('items'),
-  projects: createTable<Project>('projects'),
-  // Add more tables as needed
-}
+	items: createTable<Item>('items'),
+	projects: createTable<Project>('projects')
+	// Add more tables as needed
+};
 ```
-
-
 
 ## Storage Implementation Rules
 
 ### Storage Wrapper Requirements
 
 Create centralized storage helpers that:
+
 - Initialize storage with proper bucket configuration
 - Handle file upload/download conversions
 - Manage file permissions
@@ -404,6 +402,7 @@ Server → Client: file ID only
 ```
 
 Rules:
+
 - Strip `data:...;base64,` prefix before processing
 - Decode base64 to bytes using your language's standard library
 - Use the SDK's InputFile helper for uploads
@@ -430,80 +429,74 @@ Server → Client: data URL string (or secure download URL)
 - Handle missing files gracefully
 - Implement orphaned file cleanup when rows are deleted
 
-
-
 ## Storage Wrapper Template
 
 Create a centralized storage helper:
 
 ```typescript
-import { Client, Storage, ID } from 'node-appwrite'
-import { InputFile } from 'node-appwrite/file'
+import { Client, Storage, ID } from 'node-appwrite';
+import { InputFile } from 'node-appwrite/file';
 
 const client = new Client()
-  .setEndpoint(process.env.APPWRITE_ENDPOINT!)
-  .setProject(process.env.APPWRITE_PROJECT_ID!)
-  .setKey(process.env.APPWRITE_API_KEY!)
+	.setEndpoint(process.env.APPWRITE_ENDPOINT!)
+	.setProject(process.env.APPWRITE_PROJECT_ID!)
+	.setKey(process.env.APPWRITE_API_KEY!);
 
-const storage = new Storage(client)
-const BUCKET_ID = process.env.APPWRITE_BUCKET_ID!
+const storage = new Storage(client);
+const BUCKET_ID = process.env.APPWRITE_BUCKET_ID!;
 
 export const fileStorage = {
-  /**
-   * Upload file from base64 string
-   * @returns File ID only (never store base64 in database)
-   */
-  async upload(base64Data: string, fileName: string, mimeType: string) {
-    // Strip data URL prefix if present
-    const base64Clean = base64Data.replace(/^data:[^;]+;base64,/, '')
-    
-    // Convert to buffer
-    const buffer = Buffer.from(base64Clean, 'base64')
-    
-    // Create InputFile
-    const inputFile = InputFile.fromBuffer(buffer, fileName)
-    
-    // Upload to storage
-    const file = await storage.createFile(BUCKET_ID, ID.unique(), inputFile)
-    
-    return file.$id // Return ID only
-  },
+	/**
+	 * Upload file from base64 string
+	 * @returns File ID only (never store base64 in database)
+	 */
+	async upload(base64Data: string, fileName: string, mimeType: string) {
+		// Strip data URL prefix if present
+		const base64Clean = base64Data.replace(/^data:[^;]+;base64,/, '');
 
-  /**
-   * Get file as data URL for client consumption
-   */
-  async getAsDataUrl(fileId: string, mimeType: string) {
-    const arrayBuffer = await storage.getFileDownload(BUCKET_ID, fileId)
-    const base64 = Buffer.from(arrayBuffer).toString('base64')
-    return `data:${mimeType};base64,${base64}`
-  },
+		// Convert to buffer
+		const buffer = Buffer.from(base64Clean, 'base64');
 
-  /**
-   * Get file preview URL
-   */
-  getPreviewUrl(fileId: string, width?: number, height?: number) {
-    return storage.getFilePreview(BUCKET_ID, fileId, width, height)
-  },
+		// Create InputFile
+		const inputFile = InputFile.fromBuffer(buffer, fileName);
 
-  /**
-   * Delete file
-   */
-  async delete(fileId: string) {
-    await storage.deleteFile(BUCKET_ID, fileId)
-  },
+		// Upload to storage
+		const file = await storage.createFile(BUCKET_ID, ID.unique(), inputFile);
 
-  /**
-   * Delete multiple files (for cleanup)
-   */
-  async deleteMany(fileIds: string[]) {
-    await Promise.allSettled(
-      fileIds.map(id => storage.deleteFile(BUCKET_ID, id))
-    )
-  },
-}
+		return file.$id; // Return ID only
+	},
+
+	/**
+	 * Get file as data URL for client consumption
+	 */
+	async getAsDataUrl(fileId: string, mimeType: string) {
+		const arrayBuffer = await storage.getFileDownload(BUCKET_ID, fileId);
+		const base64 = Buffer.from(arrayBuffer).toString('base64');
+		return `data:${mimeType};base64,${base64}`;
+	},
+
+	/**
+	 * Get file preview URL
+	 */
+	getPreviewUrl(fileId: string, width?: number, height?: number) {
+		return storage.getFilePreview(BUCKET_ID, fileId, width, height);
+	},
+
+	/**
+	 * Delete file
+	 */
+	async delete(fileId: string) {
+		await storage.deleteFile(BUCKET_ID, fileId);
+	},
+
+	/**
+	 * Delete multiple files (for cleanup)
+	 */
+	async deleteMany(fileIds: string[]) {
+		await Promise.allSettled(fileIds.map((id) => storage.deleteFile(BUCKET_ID, id)));
+	}
+};
 ```
-
-
 
 ## Functions Integration Pattern
 
@@ -519,12 +512,12 @@ export const fileStorage = {
 
 ### Execution Patterns
 
-| Pattern | Use Case | Method |
-|---------|----------|--------|
-| **Synchronous** | Immediate response needed | `createExecution(functionId, body, async=false)` |
-| **Asynchronous** | Fire-and-forget, long tasks | `createExecution(functionId, body, async=true)` |
-| **Scheduled** | Cron-based triggers | Configure in Console/appwrite.json |
-| **Event-driven** | Database/storage triggers | Configure event subscriptions |
+| Pattern          | Use Case                    | Method                                           |
+| ---------------- | --------------------------- | ------------------------------------------------ |
+| **Synchronous**  | Immediate response needed   | `createExecution(functionId, body, async=false)` |
+| **Asynchronous** | Fire-and-forget, long tasks | `createExecution(functionId, body, async=true)`  |
+| **Scheduled**    | Cron-based triggers         | Configure in Console/appwrite.json               |
+| **Event-driven** | Database/storage triggers   | Configure event subscriptions                    |
 
 ### Implementation Steps
 
@@ -553,23 +546,22 @@ export const fileStorage = {
 - [Function Runtimes](https://appwrite.io/docs/products/functions/runtimes)
 - [Event Triggers](https://appwrite.io/docs/advanced/platform/events)
 
-
-
 ## Messaging Integration Pattern
 
 **Documentation:** [Messaging Overview](https://appwrite.io/docs/products/messaging)
 
 ### Message Types
 
-| Type | Method | Use Case |
-|------|--------|----------|
+| Type      | Method          | Use Case                            |
+| --------- | --------------- | ----------------------------------- |
 | **Email** | `createEmail()` | Transactional emails, notifications |
-| **Push** | `createPush()` | Mobile/web push notifications |
-| **SMS** | `createSms()` | Text messages, verification codes |
+| **Push**  | `createPush()`  | Mobile/web push notifications       |
+| **SMS**   | `createSMS()`   | Text messages, verification codes   |
 
 ### Targeting Options
 
 Messages can be sent to:
+
 - **Users**: Array of user IDs (`users` parameter)
 - **Targets**: Specific device/endpoint IDs (`targets` parameter)
 - **Topics**: Broadcast to subscribers (`topics` parameter)
@@ -580,7 +572,7 @@ Messages can be sent to:
 2. **Create message** using the appropriate method:
    - `createEmail(messageId, subject, content, topics, users, targets, ...)`
    - `createPush(messageId, title, body, topics, users, targets, data)`
-   - `createSms(messageId, content, topics, users, targets)`
+   - `createSMS(messageId, content, topics, users, targets)`
 3. **Handle delivery status** by checking the returned message object
 
 ### Topic Subscriptions
@@ -590,11 +582,11 @@ Messages can be sent to:
 
 ### Provider Configuration Required
 
-| Channel | Providers |
-|---------|-----------|
-| **Email** | SMTP, Mailgun, SendGrid, Mailchimp |
-| **Push** | FCM (Android), APNS (iOS) |
-| **SMS** | Twilio, Vonage, Textmagic, Telesign |
+| Channel   | Providers                           |
+| --------- | ----------------------------------- |
+| **Email** | SMTP, Mailgun, SendGrid, Mailchimp  |
+| **Push**  | FCM (Android), APNS (iOS)           |
+| **SMS**   | Twilio, Vonage, Textmagic, Telesign |
 
 Configure providers in Appwrite Console → Messaging → Providers
 
@@ -613,8 +605,6 @@ Configure providers in Appwrite Console → Messaging → Providers
 - [Send SMS](https://appwrite.io/docs/products/messaging/send-sms-messages)
 - [Topics](https://appwrite.io/docs/products/messaging/topics)
 
-
-
 ## Realtime Integration Pattern
 
 **Documentation:** [Realtime Overview](https://appwrite.io/docs/products/realtime)
@@ -632,27 +622,28 @@ Realtime subscriptions allow your app to receive live updates when data changes.
 
 ### Realtime Channels Reference
 
-| Channel Pattern | Description |
-|-----------------|-------------|
-| `databases.[DB_ID].tables.[TABLE_ID].rows` | All rows in table |
-| `databases.[DB_ID].tables.[TABLE_ID].rows.[ROW_ID]` | Specific row |
-| `buckets.[BUCKET_ID].files` | All files in bucket |
-| `buckets.[BUCKET_ID].files.[FILE_ID]` | Specific file |
-| `account` | Current user's account changes |
-| `teams` | Team membership changes |
-| `teams.[TEAM_ID]` | Specific team changes |
+| Channel Pattern                                     | Description                    |
+| --------------------------------------------------- | ------------------------------ |
+| `databases.[DB_ID].tables.[TABLE_ID].rows`          | All rows in table              |
+| `databases.[DB_ID].tables.[TABLE_ID].rows.[ROW_ID]` | Specific row                   |
+| `buckets.[BUCKET_ID].files`                         | All files in bucket            |
+| `buckets.[BUCKET_ID].files.[FILE_ID]`               | Specific file                  |
+| `account`                                           | Current user's account changes |
+| `teams`                                             | Team membership changes        |
+| `teams.[TEAM_ID]`                                   | Specific team changes          |
 
 ### Event Types
 
 The callback receives an event object with:
+
 - `events`: Array of event strings (e.g., `databases.*.tables.*.rows.*.create`)
 - `payload`: The row/file/account data that changed
 
-| Event | Triggered When |
-|-------|----------------|
-| `*.create` | New row/file created |
+| Event      | Triggered When            |
+| ---------- | ------------------------- |
+| `*.create` | New row/file created      |
 | `*.update` | Existing row/file updated |
-| `*.delete` | Row/file deleted |
+| `*.delete` | Row/file deleted          |
 
 ### Implementation Pattern
 
@@ -691,8 +682,6 @@ subscription.close()  // or unsubscribe()
 - [Subscribe to Account](https://appwrite.io/docs/products/realtime/subscribe-to-account)
 - [Channels Reference](https://appwrite.io/docs/products/realtime/channels)
 
-
-
 ## Sites Deployment Pattern
 
 Appwrite Sites is a hosting platform for static and SSR applications. Configuration is primarily done through the Appwrite Console or CLI.
@@ -715,6 +704,7 @@ Appwrite Sites is a hosting platform for static and SSR applications. Configurat
 ### Environment Variables
 
 Configure in Appwrite Console under Site settings:
+
 - `APPWRITE_ENDPOINT` - Your Appwrite endpoint
 - `APPWRITE_PROJECT_ID` - Your project ID
 - Build-time vs runtime variables as needed
@@ -728,20 +718,22 @@ Configure in Appwrite Console under Site settings:
 ### Rollbacks
 
 Appwrite Sites supports instant rollbacks:
+
 - View deployment history in Console
 - Click "Activate" on any previous deployment
 - See: [Instant Rollbacks](https://appwrite.io/docs/products/sites/instant-rollbacks)
 
-
 ## Next.js-Specific Best Practices
 
 ### Rendering Strategy
+
 - Default to Server Components for all data fetching
 - Use `'use server'` for all mutation functions
 - Only use Client Components when explicitly needed for interactivity
 - Never import Appwrite SDK in Client Components
 
 ### Data Fetching Pattern
+
 ```typescript
 // In Server Component - direct async/await
 async function ItemsPage() {
@@ -751,19 +743,21 @@ async function ItemsPage() {
 ```
 
 ### Revalidation
+
 ```typescript
 // After mutations, revalidate the path
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from 'next/cache';
 
 export async function createItem(data) {
-  'use server'
-  const item = await db.items.create(data)
-  revalidatePath('/items')
-  return { item }
+	'use server';
+	const item = await db.items.create(data);
+	revalidatePath('/items');
+	return { item };
 }
 ```
 
 ### File Organization
+
 ```
 app/
 ├── actions/           # Server Actions
@@ -836,27 +830,31 @@ Multi-tenancy allows a single application instance to serve multiple isolated gr
 **ALWAYS PREFER TEAM/MEMBER-BASED ROLES over user-specific roles.** This is a fundamental architectural decision:
 
 #### Avoid: User-Specific Permissions
+
 ```javascript
 // DON'T: User-specific permissions don't scale
-Permission.read(Role.user('<USER_ID>'))
-Permission.write(Role.user('<USER_ID>'))
+Permission.read(Role.user('<USER_ID>'));
+Permission.write(Role.user('<USER_ID>'));
 ```
 
 **Problems with user-specific permissions:**
+
 - Hard to scale when users need to share resources
 - Difficult to add/remove access without updating every row
 - No way to represent organizational hierarchies
 - Poor support for collaborative features
 
 #### Prefer: Team/Member-Based Roles
+
 ```javascript
 // DO: Team-based permissions scale with your organization
-Permission.read(Role.team('<TEAM_ID>', 'member'))
-Permission.update(Role.team('<TEAM_ID>', 'admin'))
-Permission.delete(Role.team('<TEAM_ID>', 'owner'))
+Permission.read(Role.team('<TEAM_ID>', 'member'));
+Permission.update(Role.team('<TEAM_ID>', 'admin'));
+Permission.delete(Role.team('<TEAM_ID>', 'owner'));
 ```
 
 **Benefits of team/member-based roles:**
+
 - Automatic access for all team members based on their role
 - Easy to add/remove members without touching rows
 - Scales naturally as teams grow
@@ -868,15 +866,11 @@ Permission.delete(Role.team('<TEAM_ID>', 'owner'))
 
 ```javascript
 // ALWAYS filter by teamId for tenant isolation
-const response = await tablesDB.listRows(
-  '<DATABASE_ID>',
-  '<TABLE_ID>',
-  [
-    Query.equal('teamId', '<TEAM_ID>'),  // Critical for isolation
-    Query.orderDesc('$createdAt'),
-    Query.limit(25)
-  ]
-);
+const response = await tablesDB.listRows('<DATABASE_ID>', '<TABLE_ID>', [
+	Query.equal('teamId', '<TEAM_ID>'), // Critical for isolation
+	Query.orderDesc('$createdAt'),
+	Query.limit(25)
+]);
 ```
 
 ### Role Verification Pattern
@@ -886,10 +880,10 @@ Before allowing sensitive operations, always verify the user's role:
 ```javascript
 // Verify permissions before sensitive operations
 const memberships = await teams.listMemberships('<TEAM_ID>');
-const membership = memberships.memberships.find(m => m.userId === userId);
+const membership = memberships.memberships.find((m) => m.userId === userId);
 
 if (!membership?.roles.includes('admin')) {
-  throw new Error('Insufficient permissions');
+	throw new Error('Insufficient permissions');
 }
 ```
 
@@ -904,6 +898,7 @@ See: [Teams Documentation](https://appwrite.io/docs/products/auth/teams)
 #### Step 2: Define Custom Roles
 
 Common role hierarchy:
+
 - **owner**: Full control, can manage team settings and members
 - **admin**: Can manage resources and most settings
 - **member**: Can create/edit resources with limited permissions
@@ -916,6 +911,7 @@ For team invitations and membership management, see [Team Invites Guide](https:/
 #### Step 4: Apply Permissions Consistently
 
 Use team roles for all resources:
+
 - **Database rows**: Apply `Role.team('<TEAM_ID>', 'role')` permissions
 - **Storage files**: Same team-based permission pattern
 - **Always include `teamId`** as a field in your rows for query filtering
@@ -930,11 +926,11 @@ Use team roles for all resources:
 
 ### Common Multi-Tenancy Patterns
 
-| Pattern | Example Apps | Structure |
-|---------|--------------|-----------|
-| Workspace-Based | Notion, Slack | Each workspace = 1 team, users can belong to multiple teams |
-| Organization-Based | GitHub, GitLab | Each org = 1 team, resources scoped to org |
-| Project-Based | Linear, Asana | Each project = 1 team, members invited per project |
+| Pattern            | Example Apps   | Structure                                                   |
+| ------------------ | -------------- | ----------------------------------------------------------- |
+| Workspace-Based    | Notion, Slack  | Each workspace = 1 team, users can belong to multiple teams |
+| Organization-Based | GitHub, GitLab | Each org = 1 team, resources scoped to org                  |
+| Project-Based      | Linear, Asana  | Each project = 1 team, members invited per project          |
 
 ### Debugging Permission Issues
 
@@ -979,6 +975,7 @@ Use team roles for all resources:
 **ALWAYS create a database setup script using the Server SDK and API key** to initialize your database schema. This script should be version-controlled and run during deployment or initial setup.
 
 **Why Use Setup Scripts:**
+
 - **Infrastructure as Code**: Database schema becomes part of your codebase, not manual console clicks
 - **Reproducibility**: Easy to recreate database structure across different environments (dev, staging, production)
 - **Version Control**: Track schema changes over time with Git
@@ -1011,70 +1008,70 @@ Use team roles for all resources:
 import { Client, TablesDB, Permission, Role } from 'node-appwrite';
 
 const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT)
-    .setProject(process.env.APPWRITE_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY);
+	.setEndpoint(process.env.APPWRITE_ENDPOINT)
+	.setProject(process.env.APPWRITE_PROJECT_ID)
+	.setKey(process.env.APPWRITE_API_KEY);
 
 const tablesDB = new TablesDB(client);
 const databaseId = process.env.APPWRITE_DATABASE_ID;
 
 async function setupDatabase() {
-    try {
-        // Create Users table
-        await tablesDB.createTable(databaseId, 'users', 'Users', [
-            Permission.read(Role.users()),
-            Permission.write(Role.users())
-        ]);
-        
-        // Add columns to Users table
-        await tablesDB.createStringColumn(databaseId, 'users', 'name', 255, true);
-        await tablesDB.createEmailColumn(databaseId, 'users', 'email', true);
-        await tablesDB.createStringColumn(databaseId, 'users', 'teamId', 255, true);
-        
-        // Create index on teamId for query performance
-        await tablesDB.createIndex(databaseId, 'users', 'idx_team', 'key', ['teamId']);
-        
-        // Create Projects table with team-based permissions
-        await tablesDB.createTable(databaseId, 'projects', 'Projects', [
-            Permission.read(Role.team('[TEAM_ID]')),
-            Permission.create(Role.team('[TEAM_ID]', 'member')),
-            Permission.update(Role.team('[TEAM_ID]', 'admin')),
-            Permission.delete(Role.team('[TEAM_ID]', 'owner')),
-        ]);
-        
-        // Add columns to Projects table
-        await tablesDB.createStringColumn(databaseId, 'projects', 'name', 255, true);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'description', 5000, false);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'teamId', 255, true);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'ownerId', 255, true);
-        await tablesDB.createDatetimeColumn(databaseId, 'projects', 'createdAt', true);
-        
-        // Create indexes
-        await tablesDB.createIndex(databaseId, 'projects', 'idx_team', 'key', ['teamId']);
-        await tablesDB.createIndex(databaseId, 'projects', 'idx_owner', 'key', ['ownerId']);
-        
-        // Create relationship between projects and users
-        await tablesDB.createRelationshipColumn(
-            databaseId, 
-            'projects', 
-            'users', 
-            'oneToMany',
-            false, // twoWay
-            'owner', // key in projects
-            'projects', // key in users
-            'cascade' // onDelete
-        );
-        
-        console.log('Database setup completed successfully!');
-    } catch (error) {
-        // Handle "already exists" errors gracefully for idempotency
-        if (error.code !== 409) {
-            console.error('Database setup failed:', error);
-            throw error;
-        } else {
-            console.log('Tables already exist, skipping creation');
-        }
-    }
+	try {
+		// Create Users table
+		await tablesDB.createTable(databaseId, 'users', 'Users', [
+			Permission.read(Role.users()),
+			Permission.write(Role.users())
+		]);
+
+		// Add columns to Users table
+		await tablesDB.createVarcharColumn(databaseId, 'users', 'name', 255, true);
+		await tablesDB.createEmailColumn(databaseId, 'users', 'email', true);
+		await tablesDB.createVarcharColumn(databaseId, 'users', 'teamId', 255, true);
+
+		// Create index on teamId for query performance
+		await tablesDB.createIndex(databaseId, 'users', 'idx_team', 'key', ['teamId']);
+
+		// Create Projects table with team-based permissions
+		await tablesDB.createTable(databaseId, 'projects', 'Projects', [
+			Permission.read(Role.team('[TEAM_ID]')),
+			Permission.create(Role.team('[TEAM_ID]', 'member')),
+			Permission.update(Role.team('[TEAM_ID]', 'admin')),
+			Permission.delete(Role.team('[TEAM_ID]', 'owner'))
+		]);
+
+		// Add columns to Projects table
+		await tablesDB.createVarcharColumn(databaseId, 'projects', 'name', 255, true);
+		await tablesDB.createTextColumn(databaseId, 'projects', 'description', false);
+		await tablesDB.createVarcharColumn(databaseId, 'projects', 'teamId', 255, true);
+		await tablesDB.createVarcharColumn(databaseId, 'projects', 'ownerId', 255, true);
+		await tablesDB.createDatetimeColumn(databaseId, 'projects', 'createdAt', true);
+
+		// Create indexes
+		await tablesDB.createIndex(databaseId, 'projects', 'idx_team', 'key', ['teamId']);
+		await tablesDB.createIndex(databaseId, 'projects', 'idx_owner', 'key', ['ownerId']);
+
+		// Create relationship between projects and users
+		await tablesDB.createRelationshipColumn(
+			databaseId,
+			'projects',
+			'users',
+			'oneToMany',
+			false, // twoWay
+			'owner', // key in projects
+			'projects', // key in users
+			'cascade' // onDelete
+		);
+
+		console.log('Database setup completed successfully!');
+	} catch (error) {
+		// Handle "already exists" errors gracefully for idempotency
+		if (error.code !== 409) {
+			console.error('Database setup failed:', error);
+			throw error;
+		} else {
+			console.log('Tables already exist, skipping creation');
+		}
+	}
 }
 
 setupDatabase();

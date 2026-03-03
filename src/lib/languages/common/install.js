@@ -29,7 +29,10 @@ export const jsInstallDefault = jsInstall();
 /**
  * Node.js Server SDK installation section for SSR frameworks
  */
-export const nodeAppwriteInstall = jsInstall('node-appwrite', 'Install the Appwrite Node.js Server SDK');
+export const nodeAppwriteInstall = jsInstall(
+	'node-appwrite',
+	'Install the Appwrite Node.js Server SDK'
+);
 
 /**
  * Python installation section
@@ -113,7 +116,7 @@ export const dartInstall = (version, isServer = false) => {
 	const sdkName = isServer ? 'Dart Server SDK' : 'Flutter SDK';
 	const pubCommand = isServer ? 'dart pub get' : 'flutter pub get';
 	const packageName = isServer ? 'dart_appwrite' : 'appwrite';
-	
+
 	return `## SDK Installation
 
 Add the Appwrite ${sdkName} to your \`pubspec.yaml\`:
@@ -129,4 +132,3 @@ Then install it:
 ${pubCommand}
 \`\`\``;
 };
-

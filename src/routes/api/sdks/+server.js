@@ -30,4 +30,3 @@ export async function GET() {
 		return json({ error: error.message || 'Failed to fetch SDKs' }, { status: 500 });
 	}
 }
-

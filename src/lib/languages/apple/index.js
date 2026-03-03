@@ -34,7 +34,7 @@ export const vanilla = async (features = []) => {
 	const version = await getSDKVersion('client-apple');
 	const installation = generateInstallationTemplate(version);
 	const appleImplementation = getMobileImplementationGuide('apple', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

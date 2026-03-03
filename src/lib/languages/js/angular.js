@@ -6,4 +6,3 @@ export const angular = createFrameworkTemplate({
 	installation: jsInstall,
 	securityNotes: frameworkNotes.angular
 });
-

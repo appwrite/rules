@@ -12,7 +12,7 @@ export const server = async (features = []) => {
 	const version = await getSDKVersion('server-dart');
 	const installation = dartInstall(version, true);
 	const dartImplementation = getServerImplementationGuide('dart', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

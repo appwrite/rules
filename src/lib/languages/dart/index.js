@@ -12,7 +12,7 @@ export const flutter = async (features = []) => {
 	const version = await getSDKVersion('client-flutter');
 	const installation = dartInstall(version, false);
 	const flutterImplementation = getMobileImplementationGuide('flutter', features);
-	
+
 	return `${installation}
 
 **Framework Documentation:**

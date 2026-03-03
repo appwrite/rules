@@ -6,4 +6,3 @@ export const react = createFrameworkTemplate({
 	installation: jsInstall,
 	securityNotes: clientSecurity
 });
-

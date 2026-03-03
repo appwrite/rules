@@ -87,4 +87,3 @@ const items = await db.items.listByOwner(user.id)
 - Never use Appwrite SDK in client components
 `;
 }
-

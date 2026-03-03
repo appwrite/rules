@@ -82,7 +82,7 @@ const ssrAuthExamples = {
 
 // In your login endpoint:
 const account = new Account(adminClient);
-const session = await account.createEmailPasswordSession(email, password);
+const session = await account.createEmailPasswordSession({ email, password });
 
 // Set httpOnly cookie with session secret
 res.cookie('a_session_<PROJECT_ID>', session.secret, {
@@ -367,7 +367,7 @@ export function getSSRAuthExamples(language) {
 		dart: 'dart',
 		flutter: 'dart'
 	};
-	
+
 	const key = languageMap[language] || 'javascript';
 	return ssrAuthExamples[key] || ssrAuthExamples.javascript;
 }
@@ -379,7 +379,7 @@ export function getSSRAuthExamples(language) {
  */
 export function getSSRAuthPattern(language = 'javascript') {
 	const examples = getSSRAuthExamples(language);
-	
+
 	return `${ssrAuthPatternExplanation}
 
 **Creating Sessions:**
@@ -415,7 +415,7 @@ export const frameworkNotes = {
 - Use Angular services for dependency injection
 
 ${authNote}`,
-	
+
 	nodejs: `**Best Practices:**
 - Store endpoint and project ID in environment variables
 - Never commit API keys to version control

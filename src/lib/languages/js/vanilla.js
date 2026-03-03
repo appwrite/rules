@@ -4,6 +4,7 @@ import { clientSecurity } from '../common/security.js';
 
 export const vanilla = createFrameworkTemplate({
 	installation: jsInstall,
-	securityNotes: clientSecurity.replace('- Initialize services once and export as singletons', '').trim()
+	securityNotes: clientSecurity
+		.replace('- Initialize services once and export as singletons', '')
+		.trim()
 });
-

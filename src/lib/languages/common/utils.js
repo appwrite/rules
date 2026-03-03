@@ -9,10 +9,7 @@
  * @param {string} [options.additionalNotes] - Additional framework-specific notes
  * @returns {string}
  */
-export function createSecuritySection({
-	securityNotes,
-	additionalNotes = ''
-}) {
+export function createSecuritySection({ securityNotes, additionalNotes = '' }) {
 	return securityNotes + (additionalNotes ? `\n\n${additionalNotes}` : '');
 }
 
@@ -37,7 +34,12 @@ const clientAPIReferences = `
  * @param {boolean} [options.includeAPIReferences=true] - Whether to include API references
  * @returns {string}
  */
-export function createFrameworkTemplate({ installation, securityNotes, additionalNotes = '', includeAPIReferences = true }) {
+export function createFrameworkTemplate({
+	installation,
+	securityNotes,
+	additionalNotes = '',
+	includeAPIReferences = true
+}) {
 	const securitySection = createSecuritySection({ securityNotes, additionalNotes });
 	const apiSection = includeAPIReferences ? clientAPIReferences : '';
 	return `${installation}
@@ -62,13 +64,13 @@ export const quickStartUrls = {
 	tanstack: 'https://appwrite.io/docs/quick-starts/tanstack',
 	nodejs: 'https://appwrite.io/docs/quick-starts/nodejs',
 	vanilla: 'https://appwrite.io/docs/quick-starts/web',
-	
+
 	// Mobile Client SDKs
 	apple: 'https://appwrite.io/docs/quick-starts/apple',
 	android: 'https://appwrite.io/docs/quick-starts/android',
 	flutter: 'https://appwrite.io/docs/quick-starts/flutter',
 	'react-native': 'https://appwrite.io/docs/quick-starts/react-native',
-	
+
 	// Server SDKs
 	python: 'https://appwrite.io/docs/quick-starts/python',
 	php: 'https://appwrite.io/docs/quick-starts/php',
@@ -109,4 +111,3 @@ export const frameworkNames = {
 	kotlin: 'Kotlin',
 	swift: 'Swift'
 };
-

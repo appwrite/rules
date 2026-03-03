@@ -698,7 +698,7 @@ Required in \`.env\`:
  * Database wrapper templates for each language
  */
 const databaseWrapperTemplates = {
-  javascript: `
+	javascript: `
 ## Database Wrapper Template
 
 Create a centralized database helper at your designated location (e.g., \`lib/db.ts\` or \`server/lib/db.ts\`):
@@ -775,7 +775,7 @@ export const db = {
 \`\`\`
 `,
 
-  python: `
+	python: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`services/db.py\`:
@@ -869,7 +869,7 @@ projects = Table('projects')
 \`\`\`
 `,
 
-  php: `
+	php: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`src/Services/DatabaseService.php\`:
@@ -993,7 +993,7 @@ class DatabaseService
 \`\`\`
 `,
 
-  go: `
+	go: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`internal/db/db.go\`:
@@ -1121,7 +1121,7 @@ var (
 \`\`\`
 `,
 
-  ruby: `
+	ruby: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`lib/database_service.rb\`:
@@ -1234,7 +1234,7 @@ end
 \`\`\`
 `,
 
-  dotnet: `
+	dotnet: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`Services/DatabaseService.cs\`:
@@ -1364,7 +1364,7 @@ public static class DB
 \`\`\`
 `,
 
-  dart: `
+	dart: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`lib/services/database.dart\`:
@@ -1474,7 +1474,7 @@ final projects = Table<dynamic>('projects');
 \`\`\`
 `,
 
-  kotlin: `
+	kotlin: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`services/DatabaseService.kt\`:
@@ -1581,7 +1581,7 @@ object DB {
 \`\`\`
 `,
 
-  swift: `
+	swift: `
 ## Database Wrapper Template
 
 Create a centralized database helper at \`Services/DatabaseService.swift\`:
@@ -1705,28 +1705,28 @@ struct DB {
  * @returns {string} Database wrapper template
  */
 export function getDatabaseWrapperTemplate(sdk) {
-  // Map SDK names to template keys
-  /** @type {Record<string, string>} */
-  const sdkMap = {
-    javascript: 'javascript',
-    'react-native': 'javascript',
-    python: 'python',
-    php: 'php',
-    go: 'go',
-    flutter: 'dart',
-    dart: 'dart',
-    apple: 'swift',
-    android: 'kotlin',
-    swift: 'swift',
-    kotlin: 'kotlin',
-    ruby: 'ruby',
-    dotnet: 'dotnet'
-  };
-  
-  const templateKey = sdkMap[sdk] || 'javascript';
-  /** @type {Record<string, string>} */
-  const templates = databaseWrapperTemplates;
-  return templates[templateKey] || templates.javascript;
+	// Map SDK names to template keys
+	/** @type {Record<string, string>} */
+	const sdkMap = {
+		javascript: 'javascript',
+		'react-native': 'javascript',
+		python: 'python',
+		php: 'php',
+		go: 'go',
+		flutter: 'dart',
+		dart: 'dart',
+		apple: 'swift',
+		android: 'kotlin',
+		swift: 'swift',
+		kotlin: 'kotlin',
+		ruby: 'ruby',
+		dotnet: 'dotnet'
+	};
+
+	const templateKey = sdkMap[sdk] || 'javascript';
+	/** @type {Record<string, string>} */
+	const templates = databaseWrapperTemplates;
+	return templates[templateKey] || templates.javascript;
 }
 
 // Legacy export for backwards compatibility
@@ -1736,7 +1736,7 @@ export const databaseWrapperTemplate = databaseWrapperTemplates.javascript;
  * Storage wrapper templates for each language
  */
 const storageWrapperTemplates = {
-  javascript: `
+	javascript: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper:
@@ -1809,7 +1809,7 @@ export const fileStorage = {
 \`\`\`
 `,
 
-  python: `
+	python: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`services/storage.py\`:
@@ -1884,7 +1884,7 @@ file_storage = FileStorage()
 \`\`\`
 `,
 
-  php: `
+	php: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`src/Services/StorageService.php\`:
@@ -1995,7 +1995,7 @@ class StorageService
 \`\`\`
 `,
 
-  go: `
+	go: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`internal/storage/storage.go\`:
@@ -2088,7 +2088,7 @@ func DeleteMany(fileIds []string) {
 \`\`\`
 `,
 
-  ruby: `
+	ruby: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`lib/storage_service.rb\`:
@@ -2189,7 +2189,7 @@ end
 \`\`\`
 `,
 
-  dotnet: `
+	dotnet: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`Services/StorageService.cs\`:
@@ -2299,7 +2299,7 @@ public class StorageService
 \`\`\`
 `,
 
-  dart: `
+	dart: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`lib/services/storage.dart\`:
@@ -2403,7 +2403,7 @@ final fileStorage = FileStorageService();
 \`\`\`
 `,
 
-  kotlin: `
+	kotlin: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`services/StorageService.kt\`:
@@ -2500,7 +2500,7 @@ val fileStorage = FileStorageService()
 \`\`\`
 `,
 
-  swift: `
+	swift: `
 ## Storage Wrapper Template
 
 Create a centralized storage helper at \`Services/StorageService.swift\`:
@@ -2603,28 +2603,28 @@ let fileStorage = FileStorageService()
  * @returns {string} Storage wrapper template
  */
 export function getStorageWrapperTemplate(sdk) {
-  // Map SDK names to template keys
-  /** @type {Record<string, string>} */
-  const sdkMap = {
-    javascript: 'javascript',
-    'react-native': 'javascript',
-    python: 'python',
-    php: 'php',
-    go: 'go',
-    flutter: 'dart',
-    dart: 'dart',
-    apple: 'swift',
-    android: 'kotlin',
-    swift: 'swift',
-    kotlin: 'kotlin',
-    ruby: 'ruby',
-    dotnet: 'dotnet'
-  };
-  
-  const templateKey = sdkMap[sdk] || 'javascript';
-  /** @type {Record<string, string>} */
-  const templates = storageWrapperTemplates;
-  return templates[templateKey] || templates.javascript;
+	// Map SDK names to template keys
+	/** @type {Record<string, string>} */
+	const sdkMap = {
+		javascript: 'javascript',
+		'react-native': 'javascript',
+		python: 'python',
+		php: 'php',
+		go: 'go',
+		flutter: 'dart',
+		dart: 'dart',
+		apple: 'swift',
+		android: 'kotlin',
+		swift: 'swift',
+		kotlin: 'kotlin',
+		ruby: 'ruby',
+		dotnet: 'dotnet'
+	};
+
+	const templateKey = sdkMap[sdk] || 'javascript';
+	/** @type {Record<string, string>} */
+	const templates = storageWrapperTemplates;
+	return templates[templateKey] || templates.javascript;
 }
 
 // Legacy export for backwards compatibility
@@ -2697,7 +2697,7 @@ export const messagingPattern = `
 |------|--------|----------|
 | **Email** | \`createEmail()\` | Transactional emails, notifications |
 | **Push** | \`createPush()\` | Mobile/web push notifications |
-| **SMS** | \`createSms()\` | Text messages, verification codes |
+| **SMS** | \`createSMS()\` | Text messages, verification codes |
 
 ### Targeting Options
 
@@ -2712,7 +2712,7 @@ Messages can be sent to:
 2. **Create message** using the appropriate method:
    - \`createEmail(messageId, subject, content, topics, users, targets, ...)\`
    - \`createPush(messageId, title, body, topics, users, targets, data)\`
-   - \`createSms(messageId, content, topics, users, targets)\`
+   - \`createSMS(messageId, content, topics, users, targets)\`
 3. **Handle delivery status** by checking the returned message object
 
 ### Topic Subscriptions
@@ -2787,6 +2787,7 @@ The callback receives an event object with:
 |-------|----------------|
 | \`*.create\` | New row/file created |
 | \`*.update\` | Existing row/file updated |
+| \`*.upsert\` | Row upserted (inserted or updated) |
 | \`*.delete\` | Row/file deleted |
 
 ### Implementation Pattern
@@ -2800,6 +2801,8 @@ subscription = client.subscribe(
       add event.payload to local state
     else if event.type contains "update":
       update matching item in local state
+    else if event.type contains "upsert":
+      add or update matching item in local state
     else if event.type contains "delete":
       remove matching item from local state
   }
@@ -5712,31 +5715,31 @@ const styles = StyleSheet.create({
  * @returns {string} Implementation pattern
  */
 export function getImplementationPattern(framework) {
-  /** @type {Record<string, string>} */
-  const patterns = {
-    // JS SSR frameworks
-    tanstack: tanstackStartPattern,
-    nextjs: nextjsPattern,
-    svelte: sveltekitPattern,
-    nuxt: nuxtPattern,
-    astro: astroPattern,
-    // Server SDKs
-    python: pythonServerPattern,
-    php: phpServerPattern,
-    go: goServerPattern,
-    ruby: rubyServerPattern,
-    dotnet: dotnetServerPattern,
-    dart: dartServerPattern,
-    kotlin: kotlinServerPattern,
-    swift: swiftServerPattern,
-    // Mobile/Client SDKs
-    android: androidPattern,
-    apple: applePattern,
-    flutter: flutterPattern,
-    'react-native': reactNativePattern,
-  };
-  
-  return patterns[framework] || '';
+	/** @type {Record<string, string>} */
+	const patterns = {
+		// JS SSR frameworks
+		tanstack: tanstackStartPattern,
+		nextjs: nextjsPattern,
+		svelte: sveltekitPattern,
+		nuxt: nuxtPattern,
+		astro: astroPattern,
+		// Server SDKs
+		python: pythonServerPattern,
+		php: phpServerPattern,
+		go: goServerPattern,
+		ruby: rubyServerPattern,
+		dotnet: dotnetServerPattern,
+		dart: dartServerPattern,
+		kotlin: kotlinServerPattern,
+		swift: swiftServerPattern,
+		// Mobile/Client SDKs
+		android: androidPattern,
+		apple: applePattern,
+		flutter: flutterPattern,
+		'react-native': reactNativePattern
+	};
+
+	return patterns[framework] || '';
 }
 
 /**
@@ -5745,8 +5748,8 @@ export function getImplementationPattern(framework) {
  * @returns {boolean}
  */
 export function isServerSDK(framework) {
-  const serverSDKs = ['python', 'php', 'go', 'ruby', 'dotnet', 'dart', 'kotlin', 'swift'];
-  return serverSDKs.includes(framework);
+	const serverSDKs = ['python', 'php', 'go', 'ruby', 'dotnet', 'dart', 'kotlin', 'swift'];
+	return serverSDKs.includes(framework);
 }
 
 /**
@@ -5755,8 +5758,8 @@ export function isServerSDK(framework) {
  * @returns {boolean}
  */
 export function isMobileSDK(framework) {
-  const mobileSDKs = ['android', 'apple', 'flutter', 'react-native'];
-  return mobileSDKs.includes(framework);
+	const mobileSDKs = ['android', 'apple', 'flutter', 'react-native'];
+	return mobileSDKs.includes(framework);
 }
 
 /**
@@ -5767,45 +5770,45 @@ export function isMobileSDK(framework) {
  * @returns {string} Complete implementation guide
  */
 export function getFullImplementationGuide(framework, sdk = 'javascript', features = []) {
-  const frameworkPattern = getImplementationPattern(framework);
-  
-  if (!frameworkPattern) {
-    return generalImplementationRules;
-  }
-  
-  // Build sections based on selected features
-  const sections = [generalImplementationRules, frameworkPattern];
-  
-  // Include database-specific rules if database is selected
-  if (features.includes('database')) {
-    sections.push(databaseImplementationRules);
-    sections.push(getDatabaseWrapperTemplate(sdk));
-  }
-  
-  // Include storage-specific rules if storage is selected
-  if (features.includes('storage')) {
-    sections.push(storageImplementationRules);
-    sections.push(getStorageWrapperTemplate(sdk));
-  }
-  
-  // Include other service patterns
-  if (features.includes('functions')) {
-    sections.push(functionsPattern);
-  }
-  
-  if (features.includes('messaging')) {
-    sections.push(messagingPattern);
-  }
-  
-  if (features.includes('realtime')) {
-    sections.push(realtimePattern);
-  }
-  
-  if (features.includes('sites')) {
-    sections.push(sitesPattern);
-  }
-  
-  return sections.join('\n\n');
+	const frameworkPattern = getImplementationPattern(framework);
+
+	if (!frameworkPattern) {
+		return generalImplementationRules;
+	}
+
+	// Build sections based on selected features
+	const sections = [generalImplementationRules, frameworkPattern];
+
+	// Include database-specific rules if database is selected
+	if (features.includes('database')) {
+		sections.push(databaseImplementationRules);
+		sections.push(getDatabaseWrapperTemplate(sdk));
+	}
+
+	// Include storage-specific rules if storage is selected
+	if (features.includes('storage')) {
+		sections.push(storageImplementationRules);
+		sections.push(getStorageWrapperTemplate(sdk));
+	}
+
+	// Include other service patterns
+	if (features.includes('functions')) {
+		sections.push(functionsPattern);
+	}
+
+	if (features.includes('messaging')) {
+		sections.push(messagingPattern);
+	}
+
+	if (features.includes('realtime')) {
+		sections.push(realtimePattern);
+	}
+
+	if (features.includes('sites')) {
+		sections.push(sitesPattern);
+	}
+
+	return sections.join('\n\n');
 }
 
 /**
@@ -5815,37 +5818,37 @@ export function getFullImplementationGuide(framework, sdk = 'javascript', featur
  * @returns {string} Server SDK implementation guide
  */
 export function getServerImplementationGuide(sdk, features = []) {
-  const frameworkPattern = getImplementationPattern(sdk);
-  
-  if (!frameworkPattern) {
-    return '';
-  }
-  
-  // Build sections based on selected features
-  const sections = [generalImplementationRules, frameworkPattern];
-  
-  // Include database-specific rules if database is selected
-  if (features.includes('database')) {
-    sections.push(databaseImplementationRules);
-    sections.push(getDatabaseWrapperTemplate(sdk));
-  }
-  
-  // Include storage-specific rules if storage is selected
-  if (features.includes('storage')) {
-    sections.push(storageImplementationRules);
-    sections.push(getStorageWrapperTemplate(sdk));
-  }
-  
-  // Include other service patterns
-  if (features.includes('functions')) {
-    sections.push(functionsPattern);
-  }
-  
-  if (features.includes('messaging')) {
-    sections.push(messagingPattern);
-  }
-  
-  return sections.join('\n\n');
+	const frameworkPattern = getImplementationPattern(sdk);
+
+	if (!frameworkPattern) {
+		return '';
+	}
+
+	// Build sections based on selected features
+	const sections = [generalImplementationRules, frameworkPattern];
+
+	// Include database-specific rules if database is selected
+	if (features.includes('database')) {
+		sections.push(databaseImplementationRules);
+		sections.push(getDatabaseWrapperTemplate(sdk));
+	}
+
+	// Include storage-specific rules if storage is selected
+	if (features.includes('storage')) {
+		sections.push(storageImplementationRules);
+		sections.push(getStorageWrapperTemplate(sdk));
+	}
+
+	// Include other service patterns
+	if (features.includes('functions')) {
+		sections.push(functionsPattern);
+	}
+
+	if (features.includes('messaging')) {
+		sections.push(messagingPattern);
+	}
+
+	return sections.join('\n\n');
 }
 
 /**
@@ -5855,39 +5858,39 @@ export function getServerImplementationGuide(sdk, features = []) {
  * @returns {string} Mobile SDK implementation guide
  */
 export function getMobileImplementationGuide(sdk, features = []) {
-  const frameworkPattern = getImplementationPattern(sdk);
-  
-  if (!frameworkPattern) {
-    return '';
-  }
-  
-  // Build sections based on selected features
-  const sections = [generalImplementationRules, frameworkPattern];
-  
-  // Include database-specific rules if database is selected
-  if (features.includes('database')) {
-    sections.push(databaseImplementationRules);
-    sections.push(getDatabaseWrapperTemplate(sdk));
-  }
-  
-  // Include storage-specific rules if storage is selected
-  if (features.includes('storage')) {
-    sections.push(storageImplementationRules);
-    sections.push(getStorageWrapperTemplate(sdk));
-  }
-  
-  // Include other service patterns
-  if (features.includes('functions')) {
-    sections.push(functionsPattern);
-  }
-  
-  if (features.includes('messaging')) {
-    sections.push(messagingPattern);
-  }
-  
-  if (features.includes('realtime')) {
-    sections.push(realtimePattern);
-  }
-  
-  return sections.join('\n\n');
+	const frameworkPattern = getImplementationPattern(sdk);
+
+	if (!frameworkPattern) {
+		return '';
+	}
+
+	// Build sections based on selected features
+	const sections = [generalImplementationRules, frameworkPattern];
+
+	// Include database-specific rules if database is selected
+	if (features.includes('database')) {
+		sections.push(databaseImplementationRules);
+		sections.push(getDatabaseWrapperTemplate(sdk));
+	}
+
+	// Include storage-specific rules if storage is selected
+	if (features.includes('storage')) {
+		sections.push(storageImplementationRules);
+		sections.push(getStorageWrapperTemplate(sdk));
+	}
+
+	// Include other service patterns
+	if (features.includes('functions')) {
+		sections.push(functionsPattern);
+	}
+
+	if (features.includes('messaging')) {
+		sections.push(messagingPattern);
+	}
+
+	if (features.includes('realtime')) {
+		sections.push(realtimePattern);
+	}
+
+	return sections.join('\n\n');
 }

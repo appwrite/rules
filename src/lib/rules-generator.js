@@ -19,7 +19,20 @@ import * as codeExamples from './languages/index.js';
 export const SDK_OPTIONS = {
 	javascript: {
 		name: 'JavaScript/TypeScript',
-		frameworks: ['nextjs', 'react', 'vue', 'svelte', 'angular', 'astro', 'nuxt', 'qwik', 'solid', 'tanstack', 'nodejs', 'vanilla'],
+		frameworks: [
+			'nextjs',
+			'react',
+			'vue',
+			'svelte',
+			'angular',
+			'astro',
+			'nuxt',
+			'qwik',
+			'solid',
+			'tanstack',
+			'nodejs',
+			'vanilla'
+		],
 		importSyntax: 'import',
 		exportSyntax: 'export',
 		asyncSyntax: 'async/await'
@@ -110,9 +123,9 @@ export const SDK_OPTIONS = {
 export async function generateRules(config) {
 	const { sdk, framework, features } = config;
 	const sdkInfo = SDK_OPTIONS[sdk];
-	
+
 	const sdkInit = await generateSDKInitialization(sdk, framework, features);
-	
+
 	// Generate all sections in parallel
 	// Permissions section is mandatory for all products
 	const sections = await Promise.all([
@@ -125,7 +138,7 @@ export async function generateRules(config) {
 		features.includes('sites') ? generateSitesSection() : Promise.resolve(''),
 		features.includes('realtime') ? generateRealtimeSection() : Promise.resolve('')
 	]);
-	
+
 	let rules = `# Appwrite Development Rules
 
 > You are an expert developer focused on building apps with Appwrite's ${sdkInfo?.name || sdk} SDK.
@@ -140,7 +153,6 @@ ${sections.join('\n\n')}
 
 	return rules;
 }
-
 
 /**
  * @param {string} sdk
@@ -174,7 +186,7 @@ async function generateSDKInitialization(sdk, framework, features) {
 		}
 		return template;
 	}
-	
+
 	// Fallback to vanilla if available
 	if (sdkTemplates && sdkTemplates.vanilla) {
 		const template = sdkTemplates.vanilla;
@@ -184,7 +196,7 @@ async function generateSDKInitialization(sdk, framework, features) {
 		}
 		return template;
 	}
-	
+
 	// Final fallback
 	return `## SDK Initialization
 
@@ -227,10 +239,12 @@ When building applications that involve multiple users or tenants:
  * @returns {Promise<string>}
  */
 async function generatePermissionsSection(sdk) {
-	const { authProductLinks, permissionsProductLinks } = await import('./languages/common/products.js');
+	const { authProductLinks, permissionsProductLinks } = await import(
+		'./languages/common/products.js'
+	);
 	const { getPermissionExamples } = await import('./languages/common/permissions-examples.js');
 	const examples = getPermissionExamples(sdk);
-	
+
 	return `## Permissions & Multi-Tenancy
 
 This section is CRITICAL for building secure, scalable applications with Appwrite. Multi-tenancy is one of the most important architectural patterns in modern applications, and Appwrite's team-based permission system is designed specifically for this.
@@ -241,46 +255,30 @@ ${permissionsProductLinks}
 
 Multi-tenancy allows a single application instance to serve multiple isolated groups of users (tenants) while maintaining complete data isolation and security. Almost every modern SaaS application requires multi-tenancy to scale efficiently.
 
-### The Critical Pattern: Team-Based Permissions
+### Choosing the Right Permission Model
 
-**ALWAYS PREFER TEAM/MEMBER-BASED ROLES over user-specific roles.** This is a fundamental architectural decision:
+Use the permission type that matches your use case:
 
-#### Avoid: User-Specific Permissions
+#### User-Specific Permissions
 \`\`\`${getLanguageFromSdk(sdk)}
-${examples.avoidUserPermissions}
+${examples.userPermissions}
 \`\`\`
 
-**Problems with user-specific permissions:**
-- Hard to scale when users need to share resources
-- Difficult to add/remove access without updating every row
-- No way to represent organizational hierarchies
-- Poor support for collaborative features
+Use when resources are owned by a single user (e.g., user profiles, personal documents, private settings).
 
-#### Prefer: Team/Member-Based Roles
+#### Team-Based Permissions
 \`\`\`${getLanguageFromSdk(sdk)}
-${examples.preferTeamPermissions}
+${examples.teamPermissions}
 \`\`\`
 
-**Benefits of team/member-based roles:**
-- Automatic access for all team members based on their role
-- Easy to add/remove members without touching rows
-- Scales naturally as teams grow
-- Supports organizational hierarchies and complex permissions
+Use when resources are shared across an organization or group. Team members automatically get access based on their role — no need to update permissions per user.
 
-### Query Isolation Pattern
+### Team-Based Tenant Isolation
 
-**CRITICAL**: Always filter queries by \`teamId\` to ensure tenant isolation:
+Appwrite handles tenant isolation through its permission system. Set \`Role.team()\` permissions on rows, and Appwrite automatically filters query results so users only see rows they have permission to access. No manual filtering is needed.
 
 \`\`\`${getLanguageFromSdk(sdk)}
-${examples.queryWithTeamId}
-\`\`\`
-
-### Role Verification Pattern
-
-Before allowing sensitive operations, always verify the user's role:
-
-\`\`\`${getLanguageFromSdk(sdk)}
-${examples.roleCheck}
+${examples.teamIsolation}
 \`\`\`
 
 ### Multi-Tenancy Implementation Guide
@@ -345,6 +343,7 @@ ${authProductLinks}`;
  * @returns {string}
  */
 function getLanguageFromSdk(sdk) {
+	/** @type {Record<string, string>} */
 	const languageMap = {
 		javascript: 'javascript',
 		'react-native': 'javascript',
@@ -425,9 +424,9 @@ async function setupDatabase() {
         ]);
         
         // Add columns to Users table
-        await tablesDB.createStringColumn(databaseId, 'users', 'name', 255, true);
+        await tablesDB.createVarcharColumn(databaseId, 'users', 'name', 255, true);
         await tablesDB.createEmailColumn(databaseId, 'users', 'email', true);
-        await tablesDB.createStringColumn(databaseId, 'users', 'teamId', 255, true);
+        await tablesDB.createVarcharColumn(databaseId, 'users', 'teamId', 255, true);
         
         // Create index on teamId for query performance
         await tablesDB.createIndex(databaseId, 'users', 'idx_team', 'key', ['teamId']);
@@ -441,10 +440,10 @@ async function setupDatabase() {
         ]);
         
         // Add columns to Projects table
-        await tablesDB.createStringColumn(databaseId, 'projects', 'name', 255, true);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'description', 5000, false);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'teamId', 255, true);
-        await tablesDB.createStringColumn(databaseId, 'projects', 'ownerId', 255, true);
+        await tablesDB.createVarcharColumn(databaseId, 'projects', 'name', 255, true);
+        await tablesDB.createTextColumn(databaseId, 'projects', 'description', false);
+        await tablesDB.createVarcharColumn(databaseId, 'projects', 'teamId', 255, true);
+        await tablesDB.createVarcharColumn(databaseId, 'projects', 'ownerId', 255, true);
         await tablesDB.createDatetimeColumn(databaseId, 'projects', 'createdAt', true);
         
         // Create indexes
@@ -571,10 +570,10 @@ function generateFunctionTemplateLinks(sdk) {
 	if (!templatePath) {
 		return '';
 	}
-	
+
 	const templateUrl = `https://github.com/appwrite/templates/tree/main/${templatePath}`;
 	const templatesBaseUrl = 'https://github.com/appwrite/templates';
-	
+
 	return `### Starter Templates
 
 For getting started with Appwrite Functions, use the official starter template for your runtime:
@@ -591,7 +590,7 @@ For more templates and examples, see the [Appwrite Templates Repository](${templ
 async function generateFunctionsSection(sdk) {
 	const { functionsProductLinks } = await import('./languages/common/products.js');
 	const templateLinks = generateFunctionTemplateLinks(sdk);
-	
+
 	return `## Functions
 
 ${functionsProductLinks}
@@ -680,4 +679,3 @@ ${realtimeProductLinks}
 - **Testing**: Test realtime functionality with network interruptions and reconnection scenarios
 - **Cleanup**: Store unsubscribe functions and call them in cleanup hooks (useEffect cleanup, componentWillUnmount, etc.)`;
 }
-

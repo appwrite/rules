@@ -74,4 +74,3 @@ export const handle: Handle = async ({ event, resolve }) => {
 - Server handles all validation and ownership checks
 `;
 }
-

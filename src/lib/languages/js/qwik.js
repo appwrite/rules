@@ -14,4 +14,3 @@ export const qwik = createFrameworkTemplate({
 - Client-side code should only use public endpoint and project ID`,
 	additionalNotes: authNote
 });
-

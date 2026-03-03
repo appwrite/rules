@@ -49,4 +49,3 @@ queryClient.invalidateQueries({ queryKey: ['items'] })
 \`\`\`
 `;
 }
-

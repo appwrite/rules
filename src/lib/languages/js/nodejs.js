@@ -13,4 +13,3 @@ export const nodejs = `${jsInstall('node-appwrite', 'Install the Appwrite Node.j
 
 ${serverSecurity}
 - Never log or expose API keys in error messages`;
-

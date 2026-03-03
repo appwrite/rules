@@ -79,4 +79,3 @@ export async function GET({ url }) {
 		return json({ error: errorMessage }, { status: 500 });
 	}
 }
-
