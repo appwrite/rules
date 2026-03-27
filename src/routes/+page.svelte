@@ -96,7 +96,7 @@
 </script>
 
 <svelte:head>
-	<title>Appwrite Rules Generator</title>
+	<title>Appwrite AGENTS.md Generator</title>
 </svelte:head>
 
 <div class="main-layout">
